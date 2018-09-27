@@ -1,0 +1,31 @@
+service: testLicensing # NOTE: update this with your service name
+
+app: blockcluster
+tenant: saikatblockcluster
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  memorySize: 128
+  timeout: 300
+  apiKeys:
+    - TheSecurestThingEver
+
+  # you can overwrite defaults here
+  stage: ${opt:STAGE}
+  region: ${opt:REGION} #e.g: ap-south-1
+
+functions:
+  app:
+    handler: index.handler
+    environment:
+      MONGO_URL: ${opt:MONGO_URL}
+    events:
+      - http:
+          path: /
+          method: ANY
+          private: true
+      - http:
+          path: /client/create_client
+          method: POST
+          private: true 
