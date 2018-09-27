@@ -66,10 +66,10 @@ jobs:
           version: 17.11.0-ce
       - run:
           name: "Docker build"
-          command: ./.circleci/docker-build.sh
+          command: sh ./.circleci/docker-build.sh
       - run:
           name: "Docker push"
-          command: ./.circleci/docker-push.sh
+          command: sh ./.circleci/docker-push.sh
 
 
   docker_push_for_test:
