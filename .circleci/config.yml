@@ -66,10 +66,10 @@ jobs:
           version: 17.11.0-ce
       - run:
           name: "Docker build"
-          command: sh ./.circleci/docker-build.sh
+          command: ./.circleci/docker-build.sh
       - run:
           name: "Docker push"
-          command: sh ./.circleci/docker-push.sh
+          command: ./.circleci/docker-push.sh
 
 
   docker_push_for_test:
@@ -105,18 +105,4 @@ workflows:
           <<: *deploy_tag_filters
           requires:
             - checkout_code
-          context: aws-creds
-  build-and-test:
-    jobs:
-      - checkout_code:
-          <<: *build_tags
-      - docker_push_for_test:
-          <<: *build_tags
-          requires:
-            - checkout_code
-          context: aws-creds
-      - apply_kube_config_for_test:
-          <<: *build_tags
-          requires:
-            - docker_push_for_test
           context: aws-creds
