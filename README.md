@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/BlockClusterApp/licensing-microservice/tree/master.svg?style=svg)](https://circleci.com/gh/BlockClusterApp/licensing-microservice/tree/master)
+
 commands to run:
 
 For AWS LAMBDA:
