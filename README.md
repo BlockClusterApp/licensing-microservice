@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/BlockClusterApp/licensing-microservice/tree/master.svg?style=svg)](https://circleci.com/gh/BlockClusterApp/licensing-microservice/tree/master)
+[![CircleCI](https://circleci.com/gh/BlockClusterApp/licensing-microservice.svg?circle-token=38722aa898160bcfd10a1cda4e2ddb04eeeefbf8&style=svg)](https://circleci.com/gh/BlockClusterApp/licensing-microservice)
 
 commands to run:
 
