@@ -37,7 +37,7 @@ app.post('/client/create_client', (req, res, next) => {
 require('./apis/routes')(app);
 
 app.get('/*',(req, res) => {
-  return res.send({ status: 'somehow its up!' });
+  return res.redirect(302, "https://www.blockcluster.io")
 });
 
 
