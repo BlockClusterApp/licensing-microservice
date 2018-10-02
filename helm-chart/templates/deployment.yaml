@@ -27,7 +27,6 @@ spec:
       - name: {{ template "server.name" . }}
         image: {{ .Values.image }}:{{ template "server.image-tag" . }}
         imagePullPolicy: IfNotPresent
-        workingDir: /blockcluster
         env:
         - name: PORT
           value: "3000"
