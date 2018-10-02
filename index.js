@@ -2,9 +2,14 @@
 const clientCreate = require('./apis/client_init');
 const app = require('fastify')();
 
+
+
 app.get('/ping', (req, res) => {
   res.code(200).send('pong');
 });
+
+require('./apis/middlewares')(app);
+
 /*
  * Client Section.
  * 
@@ -28,9 +33,14 @@ app.post('/client/create_client', (req, res, next) => {
     });
 });
 
+
+require('./apis/routes')(app);
+
 app.get('/*',(req, res) => {
   return res.send({ status: 'somehow its up!' });
 });
+
+
 
 if (require.main === module) {
   // called directly i.e. "node app"

@@ -9,6 +9,7 @@
   "license": "ISC",
   "dependencies": {
     "fastify": "^1.12.1",
+    "jsonwebtoken": "^8.3.0",
     "mongodb": "^3.1.4",
     "schm": "^0.4.1"
   }
