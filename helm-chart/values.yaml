@@ -1,0 +1,22 @@
+server:
+
+  staging:
+    minReplicas: 1
+    maxReplicas: 5
+
+  test:
+    minReplicas: 1
+    maxReplicas: 2
+
+  dev:
+    minReplicas: 1
+    maxReplicas: 2
+
+  production:
+    minReplicas: 1
+    maxReplicas: 20
+
+# NODE_ENV: production
+# image: 402432300121.dkr.ecr.us-west-2.amazonaws.com/webapp
+# commitHash: 2ed83cb76042c974637b588542243e9cf7334f49
+# ROOT_URL: app.blockcluster.io

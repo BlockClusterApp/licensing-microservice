@@ -1,0 +1,19 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "server.name" . }}-ing
+  namespace: {{ template "server.namespace" . }}
+spec:
+  tls:
+  - hosts:
+    - {{ template "server.host" . }}
+    secretName: blockcluster-ssl
+  rules:
+  - host: {{ template "server.host" . }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "server.name" . }}-svc
+          servicePort: 80
