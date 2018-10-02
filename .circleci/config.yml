@@ -70,6 +70,14 @@ jobs:
           name: "Docker push"
           command: ./.circleci/docker-push.sh
 
+  apply_kube_config:
+    <<: *helm_container
+    steps:
+      - *restore_repo
+      - run:
+          name: "Helm apply"
+          command: "IS_TEST=1 ./.circleci/helm-apply.sh"
+
 workflows:
   version: 2
   build-and-push:
@@ -80,4 +88,9 @@ workflows:
           <<: *deploy_tag_filters
           requires:
             - checkout_code
+          context: aws-creds
+      - apply_kube_config:
+          <<: *deploy_tag_filters
+          requires:
+            - docker_push
           context: aws-creds
