@@ -14,6 +14,10 @@ default
 enterprise-app
 {{- end -}}
 
+{{- define "server.host" -}}
+enterprise.blockcluster.io
+{{- end -}}
+
 {{- define "server.monogUrl" -}}
 {{- if eq .Values.NODE_ENV "production" -}}
 mongodb://35.161.9.16:31972

@@ -59,7 +59,7 @@ spec:
         - name: NODE_ENV
           value: {{ .Values.NODE_ENV }}
         livenessProbe:
-          ttpGet:
+          httpGet:
             path: /ping
             port: 3000
           timeoutSeconds: 1
