@@ -44,7 +44,7 @@ app.get('/*',(req, res) => {
 
 if (require.main === module) {
   // called directly i.e. "node app"
-  app.listen(process.env.PORT ? process.env.PORT : 3000, (err) => {
+  app.listen(process.env.PORT ? process.env.PORT : 3000, '0.0.0.0', (err) => {
     if (err) console.error(err);
     console.log(`server listening on ${app.server.address().port}`);
   });
