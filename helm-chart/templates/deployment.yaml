@@ -29,6 +29,8 @@ spec:
         imagePullPolicy: IfNotPresent
         workingDir: /blockcluster
         env:
+        - name: PORT
+          value: "3000"
         - name: WEB_ENV
           value: {{ .Values.NODE_ENV | quote }}
         - name: NODE_ENV

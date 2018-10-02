@@ -1,7 +1,6 @@
 FROM node:8.12.0-alpine
-WORKDIR /usr/src/app
+WORKDIR /src
 COPY package*.json ./
 RUN npm install 
 COPY . .
-ENV PORT=3000
-CMD [ "node", "." ]
+CMD [ "tail", "-f", "/dev/null" ]
