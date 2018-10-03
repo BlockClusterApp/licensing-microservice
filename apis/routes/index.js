@@ -18,7 +18,7 @@ function generateToken(key) {
 }
 
 module.exports = app => {
-  app.post('/licence/validate', async (req, res) => {
+  app.post('/licence/validate', (req, res) => {
 
     if (req.authToken === 'fetch-token' && req.licenceKey) {
       // TODO: Check in DB for this key
@@ -41,4 +41,6 @@ module.exports = app => {
       });
     }
   });
+
+  require('./logs')(app);
 };

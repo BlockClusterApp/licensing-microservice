@@ -10,8 +10,9 @@ module.exports = app => {
       return next();
     }
     const b64Token = auth.split(' ')[1];
+    console.log("Token", b64Token);
     if (!b64Token) {
-      return next();
+      return res.status(401).send({success: false, error: 'Unauthorized'})
     }
     let token = Buffer.from(b64Token.trim(), 'base64').toString();
     if (token === 'fetch-token') {
