@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const mongo = require("../helpers/mongo_querys");
 const request = require("request-promise");
+const config = require('../config/index');
 
 function base64URLEncode(str) {
   return str
@@ -25,7 +26,7 @@ function construct_login(license_key) {
   // var verifier = 'abc';
   console.log(verifier);
   var challenge = base64URLEncode(sha256(verifier));
-  var auth0_client = "fwUmzlpz3fU1XPVzaNRDrRzgLBZ0QZ3Y";
+  var auth0_client = config.AUTH0_APP_CLIENT;
   var scope_var = "openid read:client_grants offline_access";
 //   var aud_var = "cashpositive";
 var state={
@@ -33,7 +34,7 @@ var state={
     license_key:license_key
 }
   var callback_URI = "http://localhost:3000/client/oauth";
-  var url = `https://saikatharryc.auth0.com/authorize?scope=${scope_var}&response_type=code&client_id=${auth0_client}&code_challenge=${challenge}&code_challenge_method=S256&redirect_uri=${callback_URI}&state=${JSON.stringify(state)}`;
+  var url = `${config.AUTH0_BASE_URL}/authorize?scope=${scope_var}&response_type=code&client_id=${auth0_client}&code_challenge=${challenge}&code_challenge_method=S256&redirect_uri=${callback_URI}&state=${JSON.stringify(state)}`;
   console.log(url);
   return { url: url, verification_key: buffer_data,license_key:license_key };
 }
@@ -45,11 +46,11 @@ async function oauthController(code,state) {
   var callback_URI = "http://localhost:3000/client/oauth";
   var options = {
     method: "POST",
-    url: "https://saikatharryc.auth0.com/oauth/token",
+    url: `${config.AUTH0_BASE_URL}/oauth/token`,
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       grant_type: "authorization_code",
-      client_id: "fwUmzlpz3fU1XPVzaNRDrRzgLBZ0QZ3Y",
+      client_id: config.AUTH0_BASE_URL,
       code_verifier: random_key,
       code: code,
       redirect_uri: callback_URI

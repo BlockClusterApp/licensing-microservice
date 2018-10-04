@@ -6,7 +6,8 @@ const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 const path = require('path');
 const clientCreate = require("./apis/client_init");
-const loginController = require("./apis/auth.client");
+const loginContrller = require("./apis/auth.client");
+const config = require('./config/index');
 
 const app = express();
 
@@ -32,12 +33,12 @@ const checkJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `https://saikatharryc.auth0.com/.well-known/jwks.json`
+    jwksUri: `${config.AUTH0_BASE_URL}/.well-known/jwks.json`
   }),
 
   // Validate the audience and the issuer.
   // audience: process.env.AUTH0_AUDIENCE,
-  issuer: `https://saikatharryc.auth0.com/`,
+  issuer: config.AUTH0_BASE_URL+'/',
   algorithms: ["RS256"]
 });
 
