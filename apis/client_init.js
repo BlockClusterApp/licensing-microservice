@@ -41,7 +41,7 @@ const createClient = async (clientDetails, queryChain) => {
     return Promise.reject(err);
   }
   let license;
-  if (queryChain.gen_license == "true" && Number(queryChain.expire) != NaN) {
+  if (queryChain.gen_license == "true" && !isNaN(queryChain.expire)) {
     try {
       license = await licensesModule.generateNewLisence(
         created.ops[0]._id,

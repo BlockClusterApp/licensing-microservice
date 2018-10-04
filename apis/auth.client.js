@@ -33,7 +33,7 @@ var state={
     buffer_data:buffer_data,
     license_key:license_key
 }
-  var callback_URI = "http://localhost:3000/client/oauth";
+  var callback_URI = `${config.MY_HOST}/client/oauth`;
   var url = `${config.AUTH0_BASE_URL}/authorize?scope=${scope_var}&response_type=code&client_id=${auth0_client}&code_challenge=${challenge}&code_challenge_method=S256&redirect_uri=${callback_URI}&state=${JSON.stringify(state)}`;
   console.log(url);
   return { url: url, verification_key: buffer_data,license_key:license_key };
@@ -43,7 +43,7 @@ async function oauthController(code,state) {
    var verifier = state.buffer_data;
    var license_key = state.license_key;
   var random_key = base64URLEncode(new Buffer(verifier));
-  var callback_URI = "http://localhost:3000/client/oauth";
+  var callback_URI = `${config.MY_HOST}/client/oauth`;
   var options = {
     method: "POST",
     url: `${config.AUTH0_BASE_URL}/oauth/token`,
