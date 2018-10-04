@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config');
 
 module.exports = (app) => {
-  app.addHook('preHandler', (req, res, next) => {
+  app.use((req, res, next) => {
     const auth = req.headers.authorization || req.headers.Authorization;
     if (!auth) {
       return next();
