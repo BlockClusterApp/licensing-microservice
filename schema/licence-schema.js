@@ -1,26 +1,27 @@
-const Schema = require('schm');
+const mongoose = require('mongoose');
 
-const LicenseSchema = Schema({
-  client_id: {
+const LicenseSchema = new mongoose.Schema({
+  clientId: {
     type: Number,
   },
   createdAt: {
     type: Date,
   },
-  license_details: {
+  licenseDetails: {
     type: {
       license_key: String,
       license_created: Date,
       license_expiry: Date,
     },
   },
-  license_token: [
+  access_key: String,
+  licenseToken: [
     {
       access_token: String,
       expireBy: Date,
     },
   ],
-  client_details: {
+  clientDetails: {
     type: {
       client_name: String,
       email_id: String,
@@ -31,6 +32,7 @@ const LicenseSchema = Schema({
     type: Boolean,
   },
 });
-module.exports = {
-  LicenseSchema,
-};
+
+const LicenceModel = mongoose.model('licence', LicenseSchema);
+
+module.exports = LicenceModel;
