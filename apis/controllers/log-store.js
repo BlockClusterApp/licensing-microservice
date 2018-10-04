@@ -1,7 +1,7 @@
-async function storeLogs({type, info, key}) {
+async function storeLogs({ type, info, key }) {
   return true;
 }
 
 module.exports = {
-  storeLogs
-}
+  storeLogs,
+};
