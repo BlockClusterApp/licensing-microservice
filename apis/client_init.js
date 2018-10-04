@@ -1,7 +1,9 @@
+
+const bcrypt = require('bcrypt-nodejs');
+
 const { LicenseSchema } = require('../schema/client_schema');
 const mongo = require('../helpers/mongo_querys');
 const licensesModule = require('./license_init');
-const bcrypt = require('bcrypt-nodejs');
 
 const rollBackClientCreation = async (clientObjectId) => {
   const deleted = await mongo
@@ -22,7 +24,7 @@ function makeAccessKey() {
 }
 
 const createClient = async (clientDetails, queryChain) => {
-  // eslint-disable-next-line no-param-reassign
+  // eslint-disable no-param-reassign
   clientDetails = Object.assign(clientDetails, {
     createdAt: new Date(),
     client_id: Date.now(),

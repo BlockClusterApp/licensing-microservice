@@ -7,6 +7,7 @@ module.exports = {
   },
   rules: {
     'no-underscore-dangle': 0,
-    'no-param-reassign': 0
+    'no-param-reassign': 0,
+    'max-len': 0,
   },
 };
