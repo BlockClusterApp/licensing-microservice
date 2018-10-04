@@ -33,6 +33,6 @@ const LicenseSchema = new mongoose.Schema({
   },
 });
 
-const LicenceModel = mongoose.model(LicenseSchema);
+const LicenceModel = mongoose.model('licence', LicenseSchema);
 
 module.exports = LicenceModel;
