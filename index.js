@@ -2,22 +2,26 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
+const mongoose = require('mongoose');
+
+const clientCreate = require('./apis/client_init');
+const loginController = require('./apis/auth.client');
+const config = require('./config');
 
 const app = express();
 
+mongoose.connect(config.mongo.url);
+// eslint-disable-next-line import/order
 const http = require('http').Server(app);
+// eslint-disable-next-line import/order
 const io = require('socket.io').listen(http);
-const config = require('./config/index');
-
-const clientCreate = require('./apis/client_init');
-const loginContrller = require('./apis/auth.client');
 
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  }),
+  })
 );
 
 function emittion(topic, data) {
@@ -65,7 +69,7 @@ app.post('/client/create_client', (req, res) => {
   clientCreate
     .createClient(req.body, req.query)
     .then(data => res.send(data))
-    .catch((error) => {
+    .catch(error => {
       console.log(error);
       return res.status(error.status ? error.status : 500).send({
         message: error.message ? error.message : 'Internal Server Error!',
@@ -75,7 +79,7 @@ app.post('/client/create_client', (req, res) => {
 });
 
 app.get('/client/oauth', async (req, res) => {
-  const mainData = await loginContrller.oauthController(req.query.code, JSON.parse(req.query.state));
+  const mainData = await loginController.oauthController(req.query.code, JSON.parse(req.query.state));
 
   emittion(mainData.topic, mainData.tokens.id_token);
   return res.json(mainData);
@@ -86,7 +90,7 @@ app.get('/client/login', (req, res) => {
   if (!req.query.license_key) {
     throw new Error('No license key found');
   }
-  return res.redirect(loginContrller.construct_login(req.query.license_key).url);
+  return res.redirect(loginController.construct_login(req.query.license_key).url);
 });
 
 require('./apis/routes')(app);
