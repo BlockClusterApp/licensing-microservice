@@ -3,31 +3,36 @@ const { LicenseSchema } = require("../schema/client_schema");
 const mongo = require("../helpers/mongo_querys");
 const licensesModule = require("./license_init");
 
-const rollBackClientCreation = async client_ObjectId => {
+const bcrypt = require('bcrypt-nodejs');
+
+const { LicenseSchema } = require('../schema/client_schema');
+const mongo = require('../helpers/mongo_querys');
+const licensesModule = require('./license_init');
+
+const rollBackClientCreation = async (clientObjectId) => {
   const deleted = await mongo
-    .deleteCollection("clients", { _id: client_ObjectId }, true)
-    .catch(error => {
-      return Promise.reject(error);
-    });
+    .deleteCollection('clients', { _id: clientObjectId }, true)
+    .catch(error => Promise.reject(error));
   return deleted;
 };
 
 function makeAccessKey() {
-  var text = "";
-  var possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (var i = 0; i < 5; i++)
+  for (let i = 0; i < 5; i += 1) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
 
   return text;
 }
 
 const createClient = async (clientDetails, queryChain) => {
+  // eslint-disable no-param-reassign
   clientDetails = Object.assign(clientDetails, {
     createdAt: new Date(),
     client_id: Date.now(),
-    status: true
+    status: true,
   });
   const hashable = makeAccessKey();
   clientDetails.access_key = bcrypt.hashSync(hashable);
@@ -36,65 +41,59 @@ const createClient = async (clientDetails, queryChain) => {
   const saveableDoc = LicenseSchema.parse(clientDetails);
   let created;
   try {
-    created = await mongo.insertCollection("clients", saveableDoc);
+    created = await mongo.insertCollection('clients', saveableDoc);
   } catch (err) {
     return Promise.reject(err);
   }
   let license;
-  if (queryChain.gen_license == "true" && !isNaN(queryChain.expire)) {
+  if (queryChain.gen_license === 'true' && !Number.isNaN(queryChain.expire)) {
     try {
       license = await licensesModule.generateNewLisence(
         created.ops[0]._id,
-        Number(queryChain.expire)
+        Number(queryChain.expire),
       );
       return { client: created, ...license };
-    } catch (error_gen_lic) {
+    } catch (error) {
       await rollBackClientCreation(created.ops[0]._id);
-      return Promise.reject(error_gen_lic);
+      return Promise.reject(error);
     }
-  } else if (queryChain.gen_license == "true") {
+  } else if (queryChain.gen_license === 'true') {
     try {
       license = await licensesModule.generateNewLisence(created.ops[0]._id);
       return { client: created, ...license };
-    } catch (error_gen_lic) {
+    } catch (error) {
       await rollBackClientCreation(created.ops[0]._id);
-      return Promise.reject(error_gen_lic);
+      return Promise.reject(error);
     }
   } else {
     return { client: created };
   }
 };
 
-const disableClient = async client_ObjectId => {
+const disableClient = async (clientObjectId) => {
   const disabled = await mongo
     .updateCollection(
-      "clients",
-      { _id: client_ObjectId },
+      'clients',
+      { _id: clientObjectId },
       {
-        $set: { status: false }
-      }
+        $set: { status: false },
+      },
     )
-    .catch(error => {
-      return Promise.reject(error);
-    });
+    .catch(error => Promise.reject(error));
   return disabled;
 };
 
-const getClients = async client_ObjectIds => {
-  let query = {};
-  if (client_ObjectIds.length) {
-    Object.assign(query, { _id: { $in: client_ObjectIds } });
+const getClients = async (clientObjectIds) => {
+  const query = {};
+  if (clientObjectIds.length) {
+    Object.assign(query, { _id: { $in: clientObjectIds } });
   }
-  const all_clients = mongo
-    .findFromCollection("clients", query)
-    .catch(error => {
-      return Promise.reject(error);
-    });
-  return all_clients;
+  const allClients = mongo.findFromCollection('clients', query).catch(error => Promise.reject(error));
+  return allClients;
 };
 
 module.exports = {
   createClient,
   disableClient,
-  getClients
+  getClients,
 };

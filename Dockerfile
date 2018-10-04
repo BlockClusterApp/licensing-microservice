@@ -1,7 +1,6 @@
-FROM node:8
-WORKDIR /usr/src/app
+FROM node:8.12.0-alpine
+WORKDIR /src
 COPY package*.json ./
-RUN npm install
+RUN npm install 
 COPY . .
-ENV PORT=4000
-CMD [ "node", "index" ]
+CMD [ "node", "." ]

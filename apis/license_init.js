@@ -1,42 +1,45 @@
-const {LicenseSchema} = require('../schema/client_schema')
+const moment = require('moment');
+
 const mongo = require('../helpers/mongo_querys');
 
-//by default will license expiry will be set to exact 1month of the creation. 
-const no_months =1 ;
+// by default will license expiry will be set to exact 1month of the creation.
+const NO_MONTHS = 1;
 function randomString(length) {
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
-    var result = '';
-    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-    return result;
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
+  let result = '';
+  for (let i = length; i > 0; i -= 1) { result += chars[Math.floor(Math.random() * chars.length)]; }
+  return result;
 }
 
-const generateNewLisence = async (client_ObjectId,license_expiry_month)=>{
-    let license_expiry = new Date(new Date().setMonth(new Date().getMonth()+(license_expiry_month ? license_expiry_month : no_months))); 
-    
-    let find_query={_id:client_ObjectId};
-    const index_B = Number(Date.now().toString().split("").splice(11,10).join(""))+1 ;
-    const index_A = Number(Date.now().toString().split("").splice(8,13).join(""))+index_B;
-    const index_C = Date.now().toString().split("").splice(10,10).join("");
-    const index_D = randomString(4);
-    const license_key= index_A+'-'+index_B+'-'+index_C+'-'+index_D ;
-    let update_query = {
-        license_details:{
-            license_key: license_key,
-            license_created: new Date(),
-            license_expiry:license_expiry 
-        }
-    };
-let license_update;
+const generateNewLisence = async (clientObjectId) => {
+  const licenseExpiry = moment().add(NO_MONTHS, 'months').toDate();
 
-try{
-    console.log(update_query)
-license_update = await mongo.updateCollection('clients',find_query,{$set:update_query});
-}catch(error_in_catch){
-    return error_in_catch
-}
-return {license_generated:license_update,...update_query.license_details};
+  const findQuery = { _id: clientObjectId };
+  const indexB = randomString(4);
+  const indexA = randomString(6);
+  const indexC = randomString(4);
+  const indexD = randomString(4);
+  const licenseKey = `${indexA}-${indexB}-${indexC}-${indexD}`;
+  const updateQuery = {
+    license_details: {
+      licenseKey,
+      license_created: new Date(),
+      licenseExpiry,
+    },
+  };
+  let licenseUpdate;
+
+  try {
+    console.log(updateQuery);
+    licenseUpdate = await mongo.updateCollection('clients', findQuery, {
+      $set: updateQuery,
+    });
+  } catch (error) {
+    return error;
+  }
+  return { license_generated: licenseUpdate, ...updateQuery.license_details };
 };
 
-module.exports ={
-    generateNewLisence
-}
+module.exports = {
+  generateNewLisence,
+};

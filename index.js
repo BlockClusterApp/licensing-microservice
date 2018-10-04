@@ -66,16 +66,31 @@ app.post("/client/create_client", (req, res) => {
   }
   clientCreate
     .createClient(req.body, req.query)
-    .then(data => {
-      return res.send(data);
-    })
-    .catch(error => {
+    .then(data => res.send(data))
+    .catch((error) => {
       console.log(error);
       return res.status(error.status ? error.status : 500).send({
+<<<<<<< HEAD
         message: error.message ? error.message : "Internal Server Error!"
+=======
+        message: error.message ? error.message : 'Internal Server Error!',
+>>>>>>> c93fad8a073d0dcf22de05b129d931a2cd1a6740
       });
     });
+  return true;
 });
+
+
+app.get('/client/oauth', async (req, res) => {
+  const mainData = await loginController.oauthController(
+    req.query.code,
+    JSON.parse(req.query.state),
+  );
+
+  emittion(mainData.topic, mainData.tokens.id_token);
+  return res.json(mainData);
+});
+app.get('/callback/first', (req, res) => res.send('Hi there , you lgged in'));
 
 app.get("/client/oauth", async (req, res) => {
   const main_data = await loginContrller.oauthController(
@@ -101,6 +116,11 @@ app.get("/client/login", (req, res) => {
 app.get("/*", (req, res) => {
   return res.send({ status: "somehow its up!" });
 });
+app.get('/*', (req, res) => res.send({ status: 'somehow its up!' }));
+
+require('./apis/routes')(app);
+
+app.get('/*', (req, res) => res.redirect(302, 'https://www.blockcluster.io'));
 
 if (require.main === module) {
   // called directly i.e. "node app"
