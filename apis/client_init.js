@@ -1,10 +1,9 @@
 const bcrypt = require('bcrypt-nodejs');
-const { LicenseSchema } = require('../schema/client_schema');
-const mongo = require('../helpers/mongo_querys');
+const Licence = require('../schema/licence-schema');
 const licensesModule = require('./license_init');
 
-const rollBackClientCreation = async (clientObjectId) => {
-  const deleted = await mongo.deleteCollection('clients', { _id: clientObjectId }, true).catch(error => Promise.reject(error));
+const rollBackClientCreation = async clientObjectId => {
+  const deleted = await Licence.remove({ _id: clientObjectId });
   return deleted;
 };
 
@@ -30,10 +29,10 @@ const createClient = async (clientDetails, queryChain) => {
   clientDetails.access_key = bcrypt.hashSync(hashable);
   // mail hashable to the client.
   console.log(hashable, '>>>>>');
-  const saveableDoc = LicenseSchema.parse(clientDetails);
+  const saveableDoc = new Licence(clientDetails);
   let created;
   try {
-    created = await mongo.insertCollection('clients', saveableDoc);
+    created = await saveableDoc.save();
   } catch (err) {
     return Promise.reject(err);
   }
@@ -59,25 +58,22 @@ const createClient = async (clientDetails, queryChain) => {
   }
 };
 
-const disableClient = async (clientObjectId) => {
-  const disabled = await mongo
-    .updateCollection(
-      'clients',
-      { _id: clientObjectId },
-      {
-        $set: { status: false },
-      },
-    )
-    .catch(error => Promise.reject(error));
+const disableClient = async clientObjectId => {
+  const disabled = await Licence.update(
+    { _id: clientObjectId },
+    {
+      $set: { status: false },
+    }
+  );
   return disabled;
 };
 
-const getClients = async (clientObjectIds) => {
+const getClients = async clientObjectIds => {
   const query = {};
   if (clientObjectIds.length) {
     Object.assign(query, { _id: { $in: clientObjectIds } });
   }
-  const allClients = mongo.findFromCollection('clients', query).catch(error => Promise.reject(error));
+  const allClients = await Licence.find(query);
   return allClients;
 };
 

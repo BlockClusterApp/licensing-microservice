@@ -1,18 +1,21 @@
 const moment = require('moment');
-
-const mongo = require('../helpers/mongo_querys');
+const Licence = require('../schema/licence-schema');
 
 // by default will license expiry will be set to exact 1month of the creation.
 const NO_MONTHS = 1;
 function randomString(length) {
   const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
   let result = '';
-  for (let i = length; i > 0; i -= 1) { result += chars[Math.floor(Math.random() * chars.length)]; }
+  for (let i = length; i > 0; i -= 1) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
   return result;
 }
 
-const generateNewLisence = async (clientObjectId) => {
-  const licenseExpiry = moment().add(NO_MONTHS, 'months').toDate();
+const generateNewLisence = async clientObjectId => {
+  const licenseExpiry = moment()
+    .add(NO_MONTHS, 'months')
+    .toDate();
 
   const findQuery = { _id: clientObjectId };
   const indexB = randomString(4);
@@ -31,7 +34,7 @@ const generateNewLisence = async (clientObjectId) => {
 
   try {
     console.log(updateQuery);
-    licenseUpdate = await mongo.updateCollection('clients', findQuery, {
+    licenseUpdate = await Licence.update(findQuery, {
       $set: updateQuery,
     });
   } catch (error) {
