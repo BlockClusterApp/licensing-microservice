@@ -1,6 +1,7 @@
 const { LicenseSchema } = require('../schema/client_schema');
 const mongo = require('../helpers/mongo_querys');
 const licensesModule = require('./license_init');
+const bcrypt = require('bcrypt-nodejs');
 
 const rollBackClientCreation = async (clientObjectId) => {
   const deleted = await mongo
@@ -9,6 +10,17 @@ const rollBackClientCreation = async (clientObjectId) => {
   return deleted;
 };
 
+function makeAccessKey() {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < 5; i += 1) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  return text;
+}
+
 const createClient = async (clientDetails, queryChain) => {
   // eslint-disable-next-line no-param-reassign
   clientDetails = Object.assign(clientDetails, {
@@ -16,6 +28,10 @@ const createClient = async (clientDetails, queryChain) => {
     client_id: Date.now(),
     status: true,
   });
+  const hashable = makeAccessKey();
+  clientDetails.access_key = bcrypt.hashSync(hashable);
+  // mail hashable to the client.
+  console.log(hashable, '>>>>>');
   const saveableDoc = LicenseSchema.parse(clientDetails);
   let created;
   try {
