@@ -14,12 +14,7 @@ const LicenseSchema = Schema({
       license_expiry: Date
     }
   },
-  license_token: [
-    {
-      access_token: String,
-      expireBy: Date
-    }
-  ],
+  access_key:String,
   client_details: {
     type: {
       client_name: String,

@@ -4,14 +4,14 @@ const bodyParser = require("body-parser");
 var crypto = require("crypto");
 const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
-
+const path = require('path');
 const clientCreate = require("./apis/client_init");
 const loginContrller = require("./apis/auth.client");
 
 const app = express();
 
 var http = require("http").Server(app);
-var io = require("socket.io")(http);
+var io = require("socket.io").listen(http);
 
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
@@ -22,9 +22,7 @@ app.use(
 );
 
 function emittion(topic, data) {
-  io.on("connection", socket => {
-    return socket.emit("/" + topic, data);
-  });
+    return io.sockets.emit("/" + topic, data);
 }
 
 const checkJwt = jwt({
@@ -84,12 +82,8 @@ app.get("/client/oauth", async (req, res) => {
     JSON.parse(req.query.state)
   );
 
-  // emittion(main_data.topic, main_data.tokens.id_token);
-  io.on("connection", socket => {
-   socket.emit("/" + main_data.topic, main_data.tokens.id_token);
-    return res.json(main_data);
-  });
- 
+  emittion(main_data.topic, main_data.tokens.id_token);
+  return res.json(main_data);
 });
 app.get("/callback/first", (req, res) => {
   return res.send("Hi there , you lgged in");

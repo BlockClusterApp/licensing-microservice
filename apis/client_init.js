@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt-nodejs");
 const { LicenseSchema } = require("../schema/client_schema");
 const mongo = require("../helpers/mongo_querys");
 const licensesModule = require("./license_init");
@@ -11,12 +12,27 @@ const rollBackClientCreation = async client_ObjectId => {
   return deleted;
 };
 
+function makeAccessKey() {
+  var text = "";
+  var possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 5; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
 const createClient = async (clientDetails, queryChain) => {
   clientDetails = Object.assign(clientDetails, {
     createdAt: new Date(),
     client_id: Date.now(),
     status: true
   });
+  const hashable = makeAccessKey();
+  clientDetails.access_key = bcrypt.hashSync(hashable);
+  //mail hashable to the client.
+  console.log(hashable,">>>>>")
   const saveableDoc = LicenseSchema.parse(clientDetails);
   let created;
   try {
@@ -66,12 +82,14 @@ const disableClient = async client_ObjectId => {
 
 const getClients = async client_ObjectIds => {
   let query = {};
-  if(client_ObjectIds.length){
-    Object.assign(query,{_id:{$in:client_ObjectIds}})
+  if (client_ObjectIds.length) {
+    Object.assign(query, { _id: { $in: client_ObjectIds } });
   }
-  const all_clients = mongo.findFromCollection("clients", query).catch(error=>{
-    return Promise.reject(error);
-  });
+  const all_clients = mongo
+    .findFromCollection("clients", query)
+    .catch(error => {
+      return Promise.reject(error);
+    });
   return all_clients;
 };
 
