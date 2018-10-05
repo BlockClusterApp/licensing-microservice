@@ -4,13 +4,16 @@ const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 const mongoose = require('mongoose');
 
-const clientCreate = require('./apis/client_init');
-const loginController = require('./apis/auth.client');
+const clientCreate = require('./apis/controllers/client_init');
+const loginController = require('./apis/controllers/auth.client');
 const config = require('./config');
 
 const app = express();
 
-mongoose.connect(config.mongo.url);
+mongoose.connect(
+  config.mongo.url,
+  { useNewUrlParser: true }
+);
 // eslint-disable-next-line import/order
 const http = require('http').Server(app);
 // eslint-disable-next-line import/order

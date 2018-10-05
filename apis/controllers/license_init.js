@@ -1,5 +1,5 @@
 const moment = require('moment');
-const Licence = require('../schema/licence-schema');
+const Licence = require('../../schema/licence-schema');
 
 // by default will license expiry will be set to exact 1month of the creation.
 const NO_MONTHS = 1;

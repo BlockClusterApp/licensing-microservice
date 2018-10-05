@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt-nodejs');
-const Licence = require('../schema/licence-schema');
+const Licence = require('../../schema/licence-schema');
 const licensesModule = require('./license_init');
 
 const rollBackClientCreation = async clientObjectId => {

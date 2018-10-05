@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const request = require('request-promise');
 
-const config = require('../config/index');
+const config = require('../../config/index');
 
 function base64URLEncode(str) {
   return str
