@@ -9,22 +9,16 @@ const LicenseSchema = new mongoose.Schema({
   },
   licenseDetails: {
     type: {
-      license_key: String,
-      license_created: Date,
-      license_expiry: Date,
+      licenseKey: String,
+      licenseCreated: Date,
+      licenseExpiry: Date,
     },
   },
   access_key: String,
-  licenseToken: [
-    {
-      access_token: String,
-      expireBy: Date,
-    },
-  ],
   clientDetails: {
     type: {
-      client_name: String,
-      email_id: String,
+      clientName: String,
+      emailId: String,
       phone: String,
     },
   },
