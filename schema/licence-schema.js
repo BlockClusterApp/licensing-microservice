@@ -6,25 +6,60 @@ const LicenseSchema = new mongoose.Schema(
       type: Number,
     },
     licenseDetails: {
-      type: {
-        licenseKey: String,
-        licenseCreated: Date,
-        licenseExpiry: Date,
-      },
+      license_key: String,
+      license_created: Date,
+      license_expiry: Date,
     },
     access_key: {
       type: String,
       select: false,
     },
-    clientDetails: {
-      type: {
-        clientName: String,
-        emailId: String,
-        phone: String,
+    daemonTokens: [
+      {
+        access_token: String,
+        isValid: Boolean,
       },
+    ],
+    clientDetails: {
+      client_name: String,
+      email_id: String,
+      phone: String,
     },
     status: {
       type: Boolean,
+    },
+    awsMetaData: {
+      user: {
+        Arn: String,
+        CreateDate: Date,
+        Path: String,
+        UserId: String,
+        UserName: String,
+      },
+      policies: [
+        {
+          PolicyName: String,
+          PolicyId: String,
+          Arn: String,
+          Path: String,
+          DefaultVersionId: String,
+          AttachmentCount: Number,
+          PermissionsBoundaryUsageCount: Number,
+          IsAttachable: Boolean,
+          Description: String,
+          CreateDate: Date,
+          UpdateDate: Date,
+        },
+      ],
+      accessKeys: [
+        {
+          AccessKeyId: String,
+          CreateDate: Date,
+          SecretAccessKey: String,
+          Status: String,
+          UserName: String,
+        },
+      ],
     },
   },
   {
@@ -32,6 +67,10 @@ const LicenseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+LicenseSchema.index({
+  'licenseDetails.licence_key': 1,
+});
 
 const LicenceModel = mongoose.model('licence', LicenseSchema);
 

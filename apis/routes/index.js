@@ -1,7 +1,7 @@
-
-
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
+
+const aws = require('../controllers/aws');
 
 function generateToken(key) {
   const token = jwt.sign(
@@ -10,14 +10,14 @@ function generateToken(key) {
     },
     config.jwt.secret,
     {
-      expiresIn: '1m',
-    },
+      expiresIn: 'm',
+    }
   );
   const accessToken = Buffer.from(token).toString('base64');
   return accessToken;
 }
 
-module.exports = (app) => {
+module.exports = app => {
   app.post('/licence/validate', (req, res) => {
     if (req.authToken === 'fetch-token' && req.licenceKey) {
       // TODO: Check in DB for this key
@@ -27,7 +27,7 @@ module.exports = (app) => {
         message: token,
       });
     }
-    if (Math.floor(new Date().getTime() / 1000) < req.jwt.exp - 60) {
+    if (Math.floor(new Date().getTime() / 1000) < req.jwt.exp - 60 * 60) {
       const token = generateToken(req.licenceKey);
       return res.send({
         success: true,
@@ -38,6 +38,11 @@ module.exports = (app) => {
       success: true,
       message: req.token,
     });
+  });
+
+  app.post('/aws-creds', async (req, res) => {
+    const result = await aws.generateAWSCreds(req.licenceKey);
+    res.send(result);
   });
 
   // eslint-disable-next-line global-require
