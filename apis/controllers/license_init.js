@@ -22,11 +22,11 @@ const generateNewLisence = async clientObjectId => {
   const indexA = randomString(6);
   const indexC = randomString(4);
   const indexD = randomString(4);
-  const licenseKey = `${indexA}-${indexB}-${indexC}-${indexD}`;
+  const licenseKey = `${indexA.toLocaleUpperCase()}-${indexB.toLocaleUpperCase()}-${indexC.toLocaleUpperCase()}-${indexD.toLocaleUpperCase()}`;
   const updateQuery = {
-    license_details: {
+    licenseDetails: {
       licenseKey,
-      license_created: new Date(),
+      licenseCreated: new Date(),
       licenseExpiry,
     },
   };
@@ -40,7 +40,7 @@ const generateNewLisence = async clientObjectId => {
   } catch (error) {
     return error;
   }
-  return { license_generated: licenseUpdate, ...updateQuery.license_details };
+  return licenseUpdate;
 };
 
 module.exports = {
