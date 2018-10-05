@@ -4,20 +4,18 @@ const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 const mongoose = require('mongoose');
 
-const clientCreate = require('./apis/controllers/client_init');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io').listen(http);
+
+const clientController = require('./apis/controllers/client_init');
 const loginController = require('./apis/controllers/auth.client');
 const config = require('./config');
-
-const app = express();
 
 mongoose.connect(
   config.mongo.url,
   { useNewUrlParser: true }
 );
-// eslint-disable-next-line import/order
-const http = require('http').Server(app);
-// eslint-disable-next-line import/order
-const io = require('socket.io').listen(http);
 
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
@@ -64,12 +62,12 @@ app.post('/sample', checkJwt, (req, res) => {
  *
  * */
 app.post('/client/create_client', (req, res) => {
-  if (!req.body.client_id || !req.body.client_details) {
+  if (!req.body.clientDetails) {
     return res.status(400).send({
-      message: 'client id or client_details is missing.',
+      message: 'client_details is missing.',
     });
   }
-  clientCreate
+  clientController
     .createClient(req.body, req.query)
     .then(data => res.send(data))
     .catch(error => {
@@ -79,6 +77,19 @@ app.post('/client/create_client', (req, res) => {
       });
     });
   return true;
+});
+/**
+ * in filetr just pass clientsIds comma seperated in query
+ */
+app.get('/client/filter', (req, res) => {
+  let query = null;
+  if (req.query.clientIds) {
+    query = req.query.clientIds.split(',');
+  }
+  clientController
+    .getClients(query)
+    .then(data => res.json(data))
+    .catch(error => res.json(error));
 });
 
 app.get('/client/oauth', async (req, res) => {
