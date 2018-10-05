@@ -7,8 +7,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Launch via NPM",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["test"],
+      "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/index.js"
+      "program": "${workspaceFolder}/index.js",
+      "env": {
+        "MONGO_URL": "mongodb://35.161.9.16:32153"
+      }
     }
   ]
 }
