@@ -104,7 +104,7 @@ app.get('/client/login', (req, res) => {
   if (!req.query.license_key) {
     throw new Error('No license key found');
   }
-  return res.redirect(loginController.construct_login(req.query.license_key).url);
+  return res.redirect(loginController.constructLogin(req.query.license_key).url);
 });
 
 require('./apis/routes')(app);
