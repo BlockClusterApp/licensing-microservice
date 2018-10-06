@@ -54,7 +54,7 @@ async function oauthController(code, state) {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       grant_type: 'authorization_code',
-      client_id: config.AUTH0_BASE_URL,
+      client_id: config.AUTH0_APP_CLIENT,
       code_verifier: randomKey,
       code,
       redirect_uri: callbackURI,
