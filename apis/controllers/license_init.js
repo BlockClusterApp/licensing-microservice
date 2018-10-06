@@ -30,17 +30,15 @@ const generateNewLisence = async clientObjectId => {
       licenseExpiry,
     },
   };
-  let licenseUpdate;
 
   try {
-    console.log(updateQuery);
-    licenseUpdate = await Licence.update(findQuery, {
+    await Licence.update(findQuery, {
       $set: updateQuery,
     });
   } catch (error) {
     return error;
   }
-  return licenseUpdate;
+  return updateQuery;
 };
 
 module.exports = {
