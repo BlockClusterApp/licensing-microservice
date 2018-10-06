@@ -11,7 +11,7 @@ function makeAccessKey() {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (let i = 0; i < 5; i += 1) {
+  for (let i = 0; i < 8; i += 1) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
 
@@ -26,6 +26,7 @@ const createClient = async (clientDetails, queryChain) => {
     status: true,
   });
   const hashable = makeAccessKey();
+  console.log(hashable);
   clientDetails.access_key = bcrypt.hashSync(hashable);
   // mail hashable to the client.
   const saveableDoc = new Licence(clientDetails);
