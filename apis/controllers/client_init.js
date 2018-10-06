@@ -80,9 +80,28 @@ const getClients = async clientObjectIds => {
   return allClients;
 };
 
+const resetclientSecret = async clientId => {
+  const hashable = makeAccessKey();
+  console.log(hashable);
+  const newHash = bcrypt.hashSync(hashable);
+  // mail hashable to the client.
+  return Licence.findOneAndUpdate({ _id: clientId }, { $set: { access_key: newHash } })
+    .exec()
+    .then(data => {
+      if (data.nModified !== 1) {
+        return {
+          status: 500,
+          error: 'Unable To Update Secret',
+        };
+      }
+      return data;
+    })
+    .catch(error => new Error(error));
+};
 module.exports = {
   createClient,
   rollBackClientCreation,
   disableClient,
   getClients,
+  resetclientSecret,
 };

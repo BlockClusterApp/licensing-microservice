@@ -91,7 +91,13 @@ app.get('/client/filter', (req, res) => {
     .then(data => res.json(data))
     .catch(error => res.json(error));
 });
-
+app.post('/client/reset-secret', async (req, res) => {
+  if (!req.body.clientId) {
+    return { error: 400, message: 'invalid client Id' };
+  }
+  const updateStat = await clientController.resetclientSecret(req.body.clientId);
+  return res.json(updateStat);
+});
 app.get('/client/oauth', async (req, res) => {
   const mainData = await loginController.oauthController(req.query.code, JSON.parse(req.query.state));
 
