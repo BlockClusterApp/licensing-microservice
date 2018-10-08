@@ -83,6 +83,7 @@ app.use((err, req, res, next) => {
       errorObj.message = 'Unknown Error Occured';
     }
   }
+  next();
   return res.status(err.status || 500).json(errorObj);
 });
 

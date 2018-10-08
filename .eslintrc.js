@@ -12,6 +12,5 @@ module.exports = {
     'arrow-parens': 0,
     'comma-dangle': 0,
     'global-require': 0,
-    'no-unused-vars': 0,
   },
 };
