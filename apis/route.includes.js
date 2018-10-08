@@ -8,6 +8,7 @@ api.includeRoutes = app => {
   const client = require('./api-routes/client-apis');
   const auth = require('./api-routes/auth-apis');
   const cli = require('./api-routes/cli-apis');
+  const regulars = require('./api-routes/regular-apis');
 
   const checkJwt = jwt({
     // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
@@ -36,6 +37,7 @@ api.includeRoutes = app => {
   app.use('/client', client);
   app.use('/auth', auth);
   app.use('/cli/*', cli, checkJwt);
+  app.use('/regulars', regulars);
 };
 
 module.exports = api;
