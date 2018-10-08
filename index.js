@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const debug = require('debug')('api:index');
 const mongoose = require('mongoose');
 
 const app = express();
@@ -23,6 +23,12 @@ app.use(
     extended: true,
   })
 );
+
+app.use((req, res, next) => {
+  debug('Headers', req.headers);
+
+  next();
+});
 
 app.get('/ping', (req, res) => {
   res.status(200).send('pong');
@@ -47,7 +53,7 @@ require('./apis/routes')(app);
 // add logger middlewere here if needed
 
 // eslint-ignore-next-line no-unused-vars
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   // set locals, only providing error in development
   // res.locals.message = err.message;
   // res.locals.error = req.app.get('env') === 'development' ? err : {};
