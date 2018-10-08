@@ -15,7 +15,7 @@ enterprise-app
 {{- end -}}
 
 {{- define "server.host" -}}
-enterprise.blockcluster.io
+enterprise-api.blockcluster.io
 {{- end -}}
 
 {{- define "server.monogUrl" -}}
