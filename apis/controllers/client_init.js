@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt-nodejs');
 const Licence = require('../../schema/licence-schema');
 const licensesModule = require('./license_init');
+const Email = require('./send-email');
 
 const rollBackClientCreation = async clientObjectId => {
   const deleted = await Licence.remove({ _id: clientObjectId });
@@ -28,7 +29,6 @@ const createClient = async (clientDetails, queryChain) => {
   const hashable = makeAccessKey();
   console.log(hashable);
   clientDetails.access_key = bcrypt.hashSync(hashable);
-  // mail hashable to the client.
   const saveableDoc = new Licence(clientDetails);
   let created;
   try {
@@ -36,6 +36,14 @@ const createClient = async (clientDetails, queryChain) => {
   } catch (err) {
     return Promise.reject(err);
   }
+  await Email.processAndSend(
+    clientDetails.clientDetails.emailId,
+    clientDetails.clientDetails.clientName,
+    'Confidential Secret Key',
+    'Secret Key Confidential',
+    'email-accessKey.ejs',
+    hashable
+  );
   let license;
   if (queryChain.gen_license === 'true' && !Number.isNaN(queryChain.expire)) {
     try {
