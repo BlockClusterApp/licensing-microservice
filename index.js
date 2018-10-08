@@ -46,7 +46,8 @@ require('./apis/routes')(app);
 
 // add logger middlewere here if needed
 
-app.use((err, req, res) => {
+// eslint-ignore-next-line no-unused-vars
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   // res.locals.message = err.message;
   // res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -82,7 +83,7 @@ app.use((err, req, res) => {
       errorObj.message = 'Unknown Error Occured';
     }
   }
-  res.status(err.status || 500).json(errorObj);
+  return res.status(err.status || 500).json(errorObj);
 });
 
 if (require.main === module) {
