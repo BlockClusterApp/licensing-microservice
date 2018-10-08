@@ -11,5 +11,6 @@ module.exports = {
     'max-len': 0,
     'arrow-parens': 0,
     'comma-dangle': 0,
+    'global-require': 0,
   },
 };
