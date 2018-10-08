@@ -1,9 +1,7 @@
-
-
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
 
-module.exports = (app) => {
+module.exports = app => {
   app.use((req, res, next) => {
     const auth = req.headers.authorization || req.headers.Authorization;
     if (!auth) {
