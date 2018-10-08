@@ -33,7 +33,7 @@ function constructLogin(licenseKey) {
     bufferData,
     licenseKey,
   };
-  const callbackURI = 'http://localhost:3000/client/oauth';
+  const callbackURI = `${config.MY_HOST}/client/oauth`;
   const url = `${
     config.AUTH0_BASE_URL
   }/authorize?scope=${scopeVar}&response_type=code&client_id=${auth0Client}&code_challenge=${challenge}&code_challenge_method=S256&redirect_uri=${callbackURI}&state=${JSON.stringify(
@@ -47,7 +47,7 @@ async function oauthController(code, state) {
   const verifier = state.bufferData;
   const { licenseKey } = state;
   const randomKey = base64URLEncode(Buffer.from(verifier));
-  const callbackURI = 'http://localhost:3000/client/oauth';
+  const callbackURI = `${config.MY_HOST}/client/oauth`;
   const options = {
     method: 'POST',
     url: `${config.AUTH0_BASE_URL}/oauth/token`,
