@@ -24,7 +24,7 @@ api.includeRoutes = app => {
     algorithms: ['RS256'],
   });
   function isAuthenticatedPages(req, res, next) {
-    if (req.headers.access_key !== config.pages_accessKey) {
+    if (req.headers['x-access-key'] !== config.pages_accessKey) {
       return next({
         status: 401,
         message: 'Unauthenticated.',
