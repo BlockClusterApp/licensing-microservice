@@ -44,6 +44,47 @@ require('./apis/routes')(app);
 
 // app.get('/*', (req, res) => res.redirect(302, 'https://www.blockcluster.io'));
 
+// add logger middlewere here if needed
+
+app.use((err, req, res) => {
+  // set locals, only providing error in development
+  // res.locals.message = err.message;
+  // res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // render the error page
+  // res.status(err.status || 500).json({ err: err.message });
+  const errorObj = {
+    service: 'licensing_microservice',
+  };
+  if (err.status === 400) {
+    if (err.validationErrors) {
+      errorObj.validationErrors = err.validationErrors;
+    }
+    errorObj.message = err.message || 'Invalid Values Supplied';
+    errorObj.head = err.head || null;
+  } else if (err.status === 401 || err.status === 403) {
+    errorObj.head = err.head || null;
+    errorObj.message = err.message || 'Unauthorised User';
+  } else if (err.status === 500) {
+    errorObj.head = err.head || null;
+    if (config.debug.enabled) {
+      errorObj.message = err.message;
+    } else {
+      errorObj.message = 'Internal Server Error';
+    }
+  } else if (err.status === 404) {
+    errorObj.head = err.head || null;
+    errorObj.message = err.message;
+  } else {
+    errorObj.head = err.head || null;
+    if (config.debug.enabled) {
+      errorObj.message = err.message;
+    } else {
+      errorObj.message = 'Unknown Error Occured';
+    }
+  }
+  res.status(err.status || 500).json(errorObj);
+});
+
 if (require.main === module) {
   // called directly i.e. "node app"
   http.listen(process.env.PORT ? process.env.PORT : 3000, () => {

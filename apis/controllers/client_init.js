@@ -81,7 +81,7 @@ const disableClient = async clientObjectId => {
 
 const getClients = async clientObjectIds => {
   const query = {};
-  if (clientObjectIds.length) {
+  if (clientObjectIds && clientObjectIds.length) {
     Object.assign(query, { _id: { $in: clientObjectIds } });
   }
   const allClients = await Licence.find(query);

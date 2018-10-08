@@ -23,7 +23,16 @@ api.includeRoutes = app => {
     issuer: `${config.AUTH0_BASE_URL}/`,
     algorithms: ['RS256'],
   });
-
+  function isAuthenticatedPages(req, res, next) {
+    if (req.headers.access_key !== config.pages_accessKey) {
+      return next({
+        status: 401,
+        message: 'Unauthenticated.',
+      });
+    }
+    return next();
+  }
+  app.use('/client/*', isAuthenticatedPages);
   app.use('/client', client);
   app.use('/auth', auth);
   app.use('/cli/*', cli, checkJwt);
