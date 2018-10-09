@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const debug = require('debug')('api:index');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 const http = require('http').Server(app);
 const io = require('socket.io').listen(http);
 
@@ -72,30 +74,29 @@ app.use((err, req, res, next) => {
     errorObj.message = err.message || 'Unauthorised User';
   } else if (err.status === 500) {
     errorObj.head = err.head || null;
-    if (config.debug.enabled) {
-      errorObj.message = err.message;
-    } else {
-      errorObj.message = 'Internal Server Error';
-    }
+
+    errorObj.message = err.message;
+
+    errorObj.message = 'Internal Server Error';
   } else if (err.status === 404) {
     errorObj.head = err.head || null;
     errorObj.message = err.message;
   } else {
     errorObj.head = err.head || null;
-    if (config.debug.enabled) {
-      errorObj.message = err.message;
-    } else {
-      errorObj.message = 'Unknown Error Occured';
-    }
+
+    errorObj.message = err.message;
+
+    errorObj.message = 'Unknown Error Occured';
   }
+
   next();
   return res.status(err.status || 500).json(errorObj);
 });
 
 if (require.main === module) {
   // called directly i.e. "node app"
-  http.listen(process.env.PORT ? process.env.PORT : 3000, () => {
-    console.log(`server listening on ${process.env.PORT ? process.env.PORT : 3000}`);
+  http.listen(process.env.PORT ? process.env.PORT : 4000, () => {
+    console.log(`server listening on ${process.env.PORT ? process.env.PORT : 4000}`);
   });
 } else {
   // required as a module => executed on aws lambda
