@@ -21,8 +21,8 @@ const LicenseSchema = new mongoose.Schema(
       },
     ],
     clientDetails: {
-      client_name: String,
-      email_id: String,
+      clientName: String,
+      emailId: String,
       phone: String,
     },
     status: {
