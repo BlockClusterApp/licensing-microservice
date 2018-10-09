@@ -79,12 +79,13 @@ const disableClient = async clientObjectId => {
   return disabled;
 };
 
-const getClients = async clientObjectIds => {
-  const query = {};
-  if (clientObjectIds && clientObjectIds.length) {
-    Object.assign(query, { _id: { $in: clientObjectIds } });
-  }
-  const allClients = await Licence.find(query);
+const getClients = async (query = {}, limit = 20, page = 0) => {
+  const allClients = await Licence.find(query)
+    .limit(limit)
+    .skip(limit * page)
+    .sort({
+      createdAt: -1,
+    });
   return allClients;
 };
 
