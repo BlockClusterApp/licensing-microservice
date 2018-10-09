@@ -24,15 +24,14 @@ router.post('/create_client', (req, res) => {
 /**
  * in filetr just pass clientsIds comma seperated in query
  */
-router.get('/filter', (req, res) => {
-  let query = null;
-  if (req.query.clientIds) {
-    query = req.query.clientIds.split(',');
-  }
+router.get('/filter', (req, res, next) => {
+  const query = req.query.query ? JSON.parse(req.query.query) : {};
+  const limit = req.query.limit ? Number(req.query.limit) : 20;
+  const page = req.query.page ? Number(req.query.page) : 0;
   clientController
-    .getClients(query)
+    .getClients(query, limit, page)
     .then(data => res.json(data))
-    .catch(error => res.json(error));
+    .catch(error => next(error));
 });
 
 router.post('/reset-secret', async (req, res) => {
