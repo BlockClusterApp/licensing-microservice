@@ -23,7 +23,7 @@ router.post('/create_client', (req, res, next) => {
 });
 
 /**
- * in filetr just pass clientsIds comma seperated in query
+ * in filter just pass clientsIds comma separated in query
  */
 router.get('/filter', (req, res, next) => {
   const query = req.query.query ? JSON.parse(req.query.query) : {};

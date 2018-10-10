@@ -28,7 +28,7 @@ function constructLogin(licenseKey) {
   const challenge = base64URLEncode(sha256(verifier));
   const auth0Client = config.AUTH0_APP_CLIENT;
   const scopeVar = 'openid read:client_grants offline_access';
-  //   var aud_var = "cashpositive";
+  //   var aud_var = "blockcluster";
   const state = {
     bufferData,
     licenseKey,
