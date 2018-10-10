@@ -20,17 +20,17 @@ function generateToken(key) {
   return accessToken;
 }
 
-router.post('/licence/validate', (req, res) => {
-  if (req.authToken === 'fetch-token' && req.licenceKey) {
+router.post('/license/validate', (req, res) => {
+  if (req.authToken === 'fetch-token' && req.licenseKey) {
     // TODO: Check in DB for this key
-    const token = generateToken(req.licenceKey);
+    const token = generateToken(req.licenseKey);
     return res.send({
       success: true,
       message: token,
     });
   }
   if (Math.floor(new Date().getTime() / 1000) < req.jwt.exp - 60 * 60) {
-    const token = generateToken(req.licenceKey);
+    const token = generateToken(req.licenseKey);
     return res.send({
       success: true,
       message: token,
@@ -43,7 +43,7 @@ router.post('/licence/validate', (req, res) => {
 });
 
 router.post('/aws-creds', async (req, res) => {
-  const result = await aws.generateAWSCreds(req.licenceKey);
+  const result = await aws.generateAWSCreds(req.licenseKey);
   res.send(result);
 });
 module.exports = router;

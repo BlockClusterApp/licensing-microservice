@@ -14,7 +14,7 @@ module.exports = app => {
     }
     let token = Buffer.from(b64Token.trim(), 'base64').toString();
     if (token === 'fetch-token') {
-      req.licenceKey = req.body.licence;
+      req.licenseKey = req.body.license;
       req.authToken = token;
       return next();
     }
@@ -37,7 +37,7 @@ module.exports = app => {
       payload: jwt.decode(token),
       verified: !!verified,
     };
-    req.licenceKey = verified.key;
+    req.licenseKey = verified.key;
     return next();
   });
 };

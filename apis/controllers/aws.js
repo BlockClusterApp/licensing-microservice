@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
 const randomstring = require('randomstring');
-const Licence = require('../../schema/licence-schema');
+const License = require('../../schema/license-schema');
 
 const IAM = new aws.IAM();
 
@@ -103,13 +103,13 @@ function createAccessToken(user) {
   });
 }
 
-async function generateAWSCreds(licenceKey) {
-  const client = await Licence.findOne({
-    'licenceDetails.licence_key': licenceKey,
+async function generateAWSCreds(licenseKey) {
+  const client = await License.findOne({
+    'licenseDetails.license_key': licenseKey,
   });
 
   if (!client) {
-    throw new Error(`Cannot generate AWS creds for invalid licence key ${licenceKey}`);
+    throw new Error(`Cannot generate AWS creds for invalid license key ${licenseKey}`);
   }
 }
 

@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt-nodejs');
-const Licence = require('../../schema/licence-schema');
+const License = require('../../schema/license-schema');
 const licensesModule = require('./license_init');
 const Email = require('./send-email');
 
 const rollBackClientCreation = async clientObjectId => {
-  const deleted = await Licence.remove({ _id: clientObjectId });
+  const deleted = await License.remove({ _id: clientObjectId });
   return deleted;
 };
 
@@ -29,7 +29,7 @@ const createClient = async clientDetails => {
   const hashable = makeAccessKey();
   console.log(hashable);
   clientDetails.access_key = bcrypt.hashSync(hashable);
-  const saveableDoc = new Licence(clientDetails);
+  const saveableDoc = new License(clientDetails);
   let created;
   try {
     created = await saveableDoc.save();
@@ -41,7 +41,7 @@ const createClient = async clientDetails => {
   let license;
   if (clientDetails.license.gen_license === true && !Number.isNaN(clientDetails.license.expire)) {
     try {
-      license = await licensesModule.generateNewLisence(created._id, !Number.isNaN(clientDetails.license.expire) ? Number(clientDetails.license.expire) : null);
+      license = await licensesModule.generateNewLicense(created._id, !Number.isNaN(clientDetails.license.expire) ? Number(clientDetails.license.expire) : null);
       await Email.processAndSend(
         clientDetails.clientDetails.emailId,
         clientDetails.clientDetails.clientName,
@@ -69,7 +69,7 @@ const createClient = async clientDetails => {
 };
 
 const disableClient = async clientObjectId => {
-  const disabled = await Licence.update(
+  const disabled = await License.update(
     { _id: clientObjectId },
     {
       $set: { status: false },
@@ -83,7 +83,7 @@ const disableClient = async clientObjectId => {
 
 const getClients = async (query, limit = 20, page = 0) => {
   Object.assign(query, { status: true });
-  const allClients = await Licence.find(query)
+  const allClients = await License.find(query)
     .limit(limit)
     .skip(limit * page)
     .sort({
@@ -97,7 +97,7 @@ const resetclientSecret = async clientId => {
   console.log(hashable);
   const newHash = bcrypt.hashSync(hashable);
 
-  return Licence.findOne({ _id: clientId })
+  return License.findOne({ _id: clientId })
     .exec()
     .then(data => {
       if (!data) {
@@ -129,7 +129,7 @@ const resetclientSecret = async clientId => {
 };
 const clientLicenseUpdate = async payload => {
   const clientObjectId = payload.clientId;
-  const clientDoc = await Licence.findOne({ _id: clientObjectId });
+  const clientDoc = await License.findOne({ _id: clientObjectId });
   if (clientDoc.licenseDetails && clientDoc.licenseDetails.licenseKey) {
     return Promise.reject({
       error: 'License Key already Exists. cannot update.',
@@ -138,9 +138,9 @@ const clientLicenseUpdate = async payload => {
   }
   let license;
   if (!Number.isNaN(payload.expire)) {
-    license = await licensesModule.generateNewLisence(clientObjectId, Number(payload.expire));
+    license = await licensesModule.generateNewLicense(clientObjectId, Number(payload.expire));
   } else {
-    license = await licensesModule.generateNewLisence(clientObjectId);
+    license = await licensesModule.generateNewLicense(clientObjectId);
   }
   return license;
 };

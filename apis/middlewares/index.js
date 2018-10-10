@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
 
-module.exports = (app) => {
-  require('./licence-injector')(app);
+module.exports = app => {
+  require('./license-injector')(app);
 };

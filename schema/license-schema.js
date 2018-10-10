@@ -69,9 +69,9 @@ const LicenseSchema = new mongoose.Schema(
 );
 
 LicenseSchema.index({
-  'licenseDetails.licence_key': 1,
+  'licenseDetails.license_key': 1,
 });
 
-const LicenceModel = mongoose.model('licence', LicenseSchema);
+const LicenseModel = mongoose.model('license', LicenseSchema);
 
-module.exports = LicenceModel;
+module.exports = LicenseModel;
