@@ -33,7 +33,7 @@ const sendEmail = async emailOptions => {
   return true;
 };
 
-const processAndSend = async (email, name, subject, text, file, key) => {
+const processAndSend = async (email, name, subject, text, file, key, licenseKey) => {
   const ejsTemplate = await getEJSTemplate({ fileName: file });
   const finalHTML = ejsTemplate({
     user: {
@@ -41,6 +41,7 @@ const processAndSend = async (email, name, subject, text, file, key) => {
       name,
     },
     accessKey: key,
+    licenseKey,
   });
   const emailProps = {
     from: { email: 'no-reply@blockcluster.io', name: 'Blockcluster' },
