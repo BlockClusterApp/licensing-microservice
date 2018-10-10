@@ -3,18 +3,19 @@ const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/client_init');
 
-router.post('/create_client', (req, res) => {
+router.post('/create_client', (req, res, next) => {
   if (!req.body.clientDetails) {
     return res.status(400).send({
       message: 'client_details is missing.',
     });
   }
   clientController
-    .createClient(req.body, req.query)
+    .createClient(req.body)
     .then(data => res.send(data))
     .catch(error => {
       console.log(error);
-      return res.status(error.status ? error.status : 500).send({
+      return next({
+        status: error.status ? error.status : '500',
         message: error.message ? error.message : 'Internal Server Error!',
       });
     });
@@ -34,9 +35,22 @@ router.get('/filter', (req, res, next) => {
     .catch(error => next(error));
 });
 
-router.post('/reset-secret', async (req, res) => {
+router.post('/license-generate', async (req, res, next) => {
   if (!req.body.clientId) {
-    return { error: 400, message: 'invalid client Id' };
+    return next({
+      error: 'Invalid client',
+      status: 400,
+    });
+  }
+  return clientController
+    .clientLicenseUpdate(req.body)
+    .then(data => res.json(data))
+    .catch(error => next(error));
+});
+
+router.post('/reset-secret', async (req, res, next) => {
+  if (!req.body.clientId) {
+    return next({ error: 400, message: 'invalid client Id' });
   }
   const updateStat = await clientController.resetclientSecret(req.body.clientId);
   return res.json(updateStat);
