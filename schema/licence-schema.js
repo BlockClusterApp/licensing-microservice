@@ -6,9 +6,9 @@ const LicenseSchema = new mongoose.Schema(
       type: Number,
     },
     licenseDetails: {
-      license_key: String,
-      license_created: Date,
-      license_expiry: Date,
+      licenseKey: String,
+      licenseCreated: Date,
+      licenseExpiry: Date,
     },
     access_key: {
       type: String,
