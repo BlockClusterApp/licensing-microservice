@@ -12,6 +12,7 @@ module.exports = {
     'arrow-parens': 0,
     'comma-dangle': 0,
     'global-require': 0,
+    'prefer-promise-reject-errors': 0,
     indent: 1,
   },
 };
