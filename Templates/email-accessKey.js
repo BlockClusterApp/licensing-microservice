@@ -38,7 +38,12 @@ module.exports = `<!DOCTYPE html>
         <%= user.name %>,</h4>
     <p style="margin-top: 5px;">
        Its Confidentaial!
+       <% if (licenseKey) {%>
+        License Key: <%= licenseKey %>
+        <% } %>
+
        Your secret acess key is : <%= accessKey %>
+      
 
         <br />
         <br />
