@@ -2,7 +2,7 @@ const moment = require('moment');
 const Licence = require('../../schema/licence-schema');
 
 // by default will license expiry will be set to exact 1month of the creation.
-const NO_MONTHS = 1;
+
 function randomString(length) {
   const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
   let result = '';
@@ -12,7 +12,7 @@ function randomString(length) {
   return result;
 }
 
-const generateNewLisence = async clientObjectId => {
+const generateNewLisence = async (clientObjectId, NO_MONTHS = 1) => {
   const licenseExpiry = moment()
     .add(NO_MONTHS, 'months')
     .toDate();

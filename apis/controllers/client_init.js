@@ -19,7 +19,7 @@ function makeAccessKey() {
   return text;
 }
 
-const createClient = async (clientDetails, queryChain) => {
+const createClient = async clientDetails => {
   // eslint-disable no-param-reassign
   clientDetails = Object.assign(clientDetails, {
     createdAt: new Date(),
@@ -36,6 +36,27 @@ const createClient = async (clientDetails, queryChain) => {
   } catch (err) {
     return Promise.reject(err);
   }
+
+  const bindable = { client: created };
+  let license;
+  if (clientDetails.license.gen_license === true && !Number.isNaN(clientDetails.license.expire)) {
+    try {
+      license = await licensesModule.generateNewLisence(created._id, !Number.isNaN(clientDetails.license.expire) ? Number(clientDetails.license.expire) : null);
+      await Email.processAndSend(
+        clientDetails.clientDetails.emailId,
+        clientDetails.clientDetails.clientName,
+        'Confidential Secret Key',
+        'Secret Key Confidential',
+        'email-accessKey.ejs',
+        hashable,
+        license.licenseKey
+      );
+      return Object.assign(bindable, license);
+    } catch (error) {
+      await rollBackClientCreation(created._id);
+      return Promise.reject(error);
+    }
+  }
   await Email.processAndSend(
     clientDetails.clientDetails.emailId,
     clientDetails.clientDetails.clientName,
@@ -44,26 +65,7 @@ const createClient = async (clientDetails, queryChain) => {
     'email-accessKey.ejs',
     hashable
   );
-  let license;
-  if (queryChain.gen_license === 'true' && !Number.isNaN(queryChain.expire)) {
-    try {
-      license = await licensesModule.generateNewLisence(created._id, Number(queryChain.expire));
-      return Object.assign({ client: created }, license);
-    } catch (error) {
-      await rollBackClientCreation(created._id);
-      return Promise.reject(error);
-    }
-  } else if (queryChain.gen_license === 'true') {
-    try {
-      license = await licensesModule.generateNewLisence(created._id);
-      return Object.assign({ client: created }, license);
-    } catch (error) {
-      await rollBackClientCreation(created._id);
-      return Promise.reject(error);
-    }
-  } else {
-    return { client: created };
-  }
+  return bindable;
 };
 
 const disableClient = async clientObjectId => {
@@ -74,12 +76,13 @@ const disableClient = async clientObjectId => {
     }
   );
   if (disabled.nModified === 0) {
-    return new Error('Client Disable Failed. unable to update.');
+    return Promise.reject({ error: 'Client Disable Failed. unable to update.', status: 400 });
   }
   return disabled;
 };
 
-const getClients = async (query = {}, limit = 20, page = 0) => {
+const getClients = async (query, limit = 20, page = 0) => {
+  Object.assign(query, { status: true });
   const allClients = await Licence.find(query)
     .limit(limit)
     .skip(limit * page)
@@ -98,18 +101,18 @@ const resetclientSecret = async clientId => {
     .exec()
     .then(data => {
       if (!data) {
-        return {
+        return Promise.reject({
           error: 'client not found!',
           status: 400,
-        };
+        });
       }
       data.access_key = newHash;
       return data.save(async (error, saved) => {
         if (error) {
-          return {
+          return Promise.reject({
             error: 'Unable to Update new Secret.',
             status: 500,
-          };
+          });
         }
         await Email.processAndSend(
           data.clientDetails.emailId,
@@ -122,10 +125,29 @@ const resetclientSecret = async clientId => {
         return saved;
       });
     })
-    .catch(error => new Error(error));
+    .catch(error => Promise.reject(error));
 };
+const clientLicenseUpdate = async payload => {
+  const clientObjectId = payload.clientId;
+  const clientDoc = await Licence.findOne({ _id: clientObjectId });
+  if (clientDoc.licenseDetails && clientDoc.licenseDetails.licenseKey) {
+    return Promise.reject({
+      error: 'License Key already Exists. cannot update.',
+      status: 400,
+    });
+  }
+  let license;
+  if (!Number.isNaN(payload.expire)) {
+    license = await licensesModule.generateNewLisence(clientObjectId, Number(payload.expire));
+  } else {
+    license = await licensesModule.generateNewLisence(clientObjectId);
+  }
+  return license;
+};
+
 module.exports = {
   createClient,
+  clientLicenseUpdate,
   rollBackClientCreation,
   disableClient,
   getClients,
