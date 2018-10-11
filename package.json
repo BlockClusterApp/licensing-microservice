@@ -38,6 +38,7 @@
     "moment": "^2.22.2",
     "mongodb": "^3.1.4",
     "mongoose": "^5.3.1",
+    "mongoose-beautiful-unique-validation": "^7.1.1",
     "randomstring": "^1.1.5",
     "request-promise": "^4.2.2",
     "schm": "^0.4.1",

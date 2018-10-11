@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
+const beautifyUnique = require('mongoose-beautiful-unique-validation');
 
 const LicenseSchema = new mongoose.Schema(
   {
     clientId: {
-      type: Number,
+      type: {
+        type: Number,
+        unique: 'Client ID already Exists.',
+      },
     },
     licenseDetails: {
       licenseKey: String,
@@ -22,11 +26,18 @@ const LicenseSchema = new mongoose.Schema(
     ],
     clientDetails: {
       clientName: String,
-      emailId: String,
-      phone: String,
+      emailId: {
+        type: String,
+        unique: 'Email already Exists.',
+      },
+      phone: {
+        type: String,
+        unique: 'Phone already Exists.',
+      },
     },
     status: {
       type: Boolean,
+      default: true,
     },
     awsMetaData: {
       user: {
@@ -67,7 +78,7 @@ const LicenseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+LicenseSchema.plugin(beautifyUnique);
 LicenseSchema.index({
   'licenseDetails.license_key': 1,
 });
