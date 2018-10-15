@@ -105,7 +105,7 @@ function createAccessToken(user) {
 
 async function generateAWSCreds(licenseKey) {
   const client = await License.findOne({
-    'licenseDetails.license_key': licenseKey,
+    'licenseDetails.licenseKey': licenseKey,
   });
 
   if (!client) {
@@ -118,7 +118,7 @@ async function generateAWSCreds(licenseKey) {
     // eslint-disable-next-line no-unused-vars
     const policyApplication = await applyPolicyToUser(awsPolicy, awsUser);
     const awsCreds = await createAccessToken(awsUser);
-    await Licence.update(
+    await License.update(
       {
         _id: client._id,
       },
@@ -132,7 +132,7 @@ async function generateAWSCreds(licenseKey) {
         },
       }
     );
-    const licence = await Licence.findOne({ _id: client._id });
+    const licence = await License.findOne({ _id: client._id });
     return licence.accessKeys[0];
   }
   return client.accessKeys[0];

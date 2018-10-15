@@ -1,18 +1,27 @@
 const express = require('express');
 
 const router = express.Router();
+const Licence = require('../../schema/license-schema');
 const loginController = require('../controllers/auth.client');
 const aws = require('../controllers/aws');
 const LogController = require('../controllers/log-store');
 
-router.post('/licence/validate', (req, res) => {
+router.post('/licence/validate', async (req, res) => {
   const metadata = {
     blockclusterAgentVersion: '1.0',
     webappVersion: '1.0',
     shouldDaemonDeployWebapp: false,
   };
   if (req.authToken === 'fetch-token' && req.licenceKey) {
-    // TODO: Check in DB for this key
+    const licence = await Licence.findOne({
+      'licenceDetails.licenseKey': req.licenceKey,
+    });
+    if (!licence) {
+      return res.send({
+        success: false,
+        error: 'Licence key not valid',
+      });
+    }
     const token = loginController.generateToken(req.licenceKey);
     return res.send({
       success: true,
