@@ -70,6 +70,22 @@ const LicenseSchema = new mongoose.Schema(
         },
       ],
     },
+    clientMeta: {
+      // some brief description may be
+      type: String,
+    },
+    clientLogo: {
+      // if exist
+      type: String,
+    },
+    serviceIncluded: {
+      /**
+       * so in this we can d like below:
+       * {payment: true}
+       * {voucher: true}
+       * */
+      type: Object,
+    },
   },
   {
     collection: 'clients',
