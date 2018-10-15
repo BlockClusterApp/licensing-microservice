@@ -1,7 +1,9 @@
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
 const request = require('request-promise');
 
-const config = require('../../config/index');
+const config = require('../../config');
 
 function base64URLEncode(str) {
   return str
@@ -63,8 +65,24 @@ async function oauthController(code, state) {
   const tokens = await request(options);
   return { tokens: JSON.parse(tokens), topic: licenseKey };
 }
+
+function generateToken(key) {
+  const token = jwt.sign(
+    {
+      key,
+    },
+    config.jwt.secret,
+    {
+      expiresIn: '600m',
+    }
+  );
+  const accessToken = Buffer.from(token).toString('base64');
+  return accessToken;
+}
+
 module.exports = {
   constructLogin,
   oauthController,
   base64URLEncode,
+  generateToken,
 };

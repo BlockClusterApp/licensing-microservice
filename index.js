@@ -48,11 +48,6 @@ app.get('/client/oauth', async (req, res) => {
 });
 
 apiRoutes.includeRoutes(app);
-require('./apis/middlewares')(app);
-// app.get('/*', (req, res) => res.redirect(302, 'https://www.blockcluster.io'));
-
-// add logger middlewere here if needed
-require('./apis/middlewares/logs')(app);
 // eslint-ignore-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // set locals, only providing error in development

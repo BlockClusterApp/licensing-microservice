@@ -64,7 +64,7 @@ function generateUser(clientId) {
 
 function applyPolicyToUser(policy, user) {
   const params = {
-    PolicyArn: policy.arn,
+    PolicyArn: policy.Arn,
     UserName: user.UserName,
   };
 
@@ -78,7 +78,7 @@ function applyPolicyToUser(policy, user) {
 
 function deleteUserPolicy(policy, user) {
   const params = {
-    PolicyArn: policy.arn,
+    PolicyArn: policy.Arn,
     UserName: user.UserName,
   };
 
@@ -111,6 +111,31 @@ async function generateAWSCreds(licenseKey) {
   if (!client) {
     throw new Error(`Cannot generate AWS creds for invalid license key ${licenseKey}`);
   }
+
+  if (!(client.accessKeys && client.accessKeys.length > 0)) {
+    const awsPolicy = await generateImagePullPolicy(client.clientId);
+    const awsUser = await generateUser(client.clientId);
+    // eslint-disable-next-line no-unused-vars
+    const policyApplication = await applyPolicyToUser(awsPolicy, awsUser);
+    const awsCreds = await createAccessToken(awsUser);
+    await Licence.update(
+      {
+        _id: client._id,
+      },
+      {
+        $set: {
+          'awsMetaData.user': awsUser,
+        },
+        $push: {
+          'awsMetaData.policies': awsPolicy,
+          'awsMetaData.accessKeys': awsCreds,
+        },
+      }
+    );
+    const licence = await Licence.findOne({ _id: client._id });
+    return licence.accessKeys[0];
+  }
+  return client.accessKeys[0];
 }
 
 module.exports = {
