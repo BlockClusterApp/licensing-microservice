@@ -15,7 +15,13 @@ enterprise-app
 {{- end -}}
 
 {{- define "server.host" -}}
+{{- if eq .Values.NODE_ENV "production" -}}
 enterprise-api.blockcluster.io
+{{- else if eq .Values.NODE_ENV "staging" -}}
+enterprise-api-staging.blockcluster.io
+{{- else if eq .Values.NODE_ENV "dev" -}}
+enterprise-api-dev.blockcluster.io
+{{- end -}}
 {{- end -}}
 
 {{- define "server.monogUrl" -}}
