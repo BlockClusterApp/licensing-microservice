@@ -20,6 +20,7 @@ router.post('/licence/validate', async (req, res) => {
       return res.send({
         success: false,
         error: 'Licence key not valid',
+        errorCode: 401,
       });
     }
     const token = loginController.generateToken(req.licenceKey);

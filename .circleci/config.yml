@@ -26,10 +26,10 @@ references:
     filters:
       branches:
         only:
-         - master
-         - staging
-         - dev
-         - test
+          - master
+          - staging
+          - dev
+          - test
       tags:
         only:
           - dev
@@ -48,7 +48,6 @@ references:
           - test
           - production
 
-
 jobs:
   checkout_code:
     <<: *container_config
@@ -64,10 +63,10 @@ jobs:
       - setup_remote_docker:
           version: 17.11.0-ce
       - run:
-          name: "Docker build"
+          name: 'Docker build'
           command: ./.circleci/docker-build.sh
       - run:
-          name: "Docker push"
+          name: 'Docker push'
           command: ./.circleci/docker-push.sh
 
   apply_kube_config:
@@ -75,8 +74,11 @@ jobs:
     steps:
       - *restore_repo
       - run:
-          name: "Helm apply"
-          command: "IS_TEST=1 ./.circleci/helm-apply.sh"
+          name: 'Helm apply'
+          command: 'IS_TEST=1 ./.circleci/helm-apply.sh'
+      - run:
+          name: 'Notify build end'
+          command: ./.circleci/build-end-notification.sh
 
 workflows:
   version: 2
