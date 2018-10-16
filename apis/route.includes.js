@@ -10,7 +10,7 @@ api.includeRoutes = app => {
   const auth = require('./api-routes/auth-apis');
   const cli = require('./api-routes/cli-apis');
   const daemon = require('./api-routes/daemon-apis');
-
+  const versions = require('./api-routes/version-apis');
   const checkJwt = jwt({
     // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
     secret: jwksRsa.expressJwtSecret({
@@ -43,10 +43,17 @@ api.includeRoutes = app => {
     }
     return next();
   }
+  // function versionAuth(req, res, next) {
+  //   // do something for auth
+  //   return next();
+  // }
   app.use('/client/*', isAuthenticatedPages);
   app.use('/client', client);
   app.use('/auth', auth);
   app.use('/cli/*', cli, checkJwt);
+
+  // app.use('/versions/*', versionAuth);
+  app.use('/versions', versions);
 
   daemon.use(licenceInjector);
   app.use('/daemon/*', daemon);

@@ -36,7 +36,7 @@ const generateNewLicense = async (clientObjectId, noMonths = NO_MONTHS) => {
       $set: updateQuery,
     });
   } catch (error) {
-    return error;
+    throw error;
   }
   return updateQuery;
 };
