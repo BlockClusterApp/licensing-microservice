@@ -8,4 +8,5 @@ module.exports = {
   MY_HOST: process.env.MY_HOST || 'http://localhost:3000',
   sendgridAPIKey: process.env.sendgridAPIKey || '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',
   pages_accessKey: process.env.pages_accessKey || '12345678',
+  dsnSentry: process.env.dsnSentry || 'https://fbb9e0f0d2e24f1387fa8210332d3a31@sentry.io/1302296',
 };

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const debug = require('debug')('api:index');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const Sentry = require('@sentry/node');
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,8 @@ const io = require('socket.io').listen(http);
 const config = require('./config');
 const loginController = require('./apis/controllers/auth.client');
 const apiRoutes = require('./apis/route.includes');
+
+Sentry.init({ dsn: config.dsnSentry });
 
 mongoose.connect(
   config.mongo.url,
@@ -48,6 +51,8 @@ app.get('/client/oauth', async (req, res) => {
 });
 
 apiRoutes.includeRoutes(app);
+
+app.use(Sentry.Handlers.errorHandler());
 // eslint-ignore-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
