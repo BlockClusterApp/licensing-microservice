@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt-nodejs');
 const randomstring = require('randomstring');
-const raven = require('raven');
+const raven = require('@sentry/node');
 
 const License = require('../../schema/license-schema');
 const licensesModule = require('./license_init');

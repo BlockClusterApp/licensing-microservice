@@ -5,17 +5,47 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const Sentry = require('@sentry/node');
-// const Raven = require('raven');
+
+const loginController = require('./apis/controllers/auth.client');
+const apiRoutes = require('./apis/route.includes');
+
+const whileListedURLs = [];
+switch (process.env.NODE_ENV) {
+  case 'production':
+    whileListedURLs.push('https://app.blockcluster.io');
+    break;
+  case 'staging':
+    whileListedURLs.push('https://staging.blockcluster.io');
+    break;
+  case 'test':
+    whileListedURLs.push('https://test.blockcluster.io');
+    break;
+  case 'dev':
+    whileListedURLs.push('https://dev.blockcluster.io');
+    break;
+  default:
+    whileListedURLs.push('http://localhost:3000');
+}
+
+const corsOptions = {
+  origin(origin, cb) {
+    if (whileListedURLs.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not allowed by CORS'));
+    }
+  },
+};
 
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
+// eslint-disable-next-line import/order
 const http = require('http').Server(app);
+// eslint-disable-next-line import/order
 const io = require('socket.io').listen(http);
 const config = require('./config');
 
 // Raven.config(config.dsnSentry).install();
-const loginController = require('./apis/controllers/auth.client');
-const apiRoutes = require('./apis/route.includes');
 
 Sentry.init({
   dsn: config.dsnSentry,

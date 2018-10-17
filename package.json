@@ -41,7 +41,6 @@
     "mongoose": "^5.3.1",
     "mongoose-beautiful-unique-validation": "^7.1.1",
     "randomstring": "^1.1.5",
-    "raven": "^2.6.4",
     "request-promise": "^4.2.2",
     "schm": "^0.4.1",
     "socket.io": "^2.1.1"

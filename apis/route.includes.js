@@ -1,4 +1,5 @@
 const jwt = require('express-jwt');
+const cors = require('cors');
 const jwksRsa = require('jwks-rsa');
 const config = require('../config');
 const licenceInjector = require('./middlewares/license-injector');
@@ -57,6 +58,7 @@ api.includeRoutes = app => {
   // app.use('/versions/*', versionAuth);
   app.use('/versions', versions);
 
+  app.options('/daemon/*', cors());
   daemon.use(licenceInjector);
   app.use('/daemon/*', daemon);
 };
