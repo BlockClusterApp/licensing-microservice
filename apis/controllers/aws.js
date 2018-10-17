@@ -116,7 +116,7 @@ async function generateAWSCreds(licenseKey) {
     const awsPolicy = await generateImagePullPolicy(client.clientId);
     const awsUser = await generateUser(client.clientId);
     // eslint-disable-next-line no-unused-vars
-    const policyApplication = await applyPolicyToUser(awsPolicy, awsUser);
+    await applyPolicyToUser(awsPolicy, awsUser);
     const awsCreds = await createAccessToken(awsUser);
     await License.update(
       {
@@ -128,14 +128,14 @@ async function generateAWSCreds(licenseKey) {
         },
         $push: {
           'awsMetaData.policies': awsPolicy,
-          'awsMetaData.accessKeys': awsCreds,
+          'awsMetaData.accessKeys': { ...awsCreds, PolicyId: awsPolicy.PolicyId },
         },
       }
     );
     const licence = await License.findOne({ _id: client._id });
-    return licence.accessKeys[0];
+    return { clientId: client.clientId, accessKeys: licence.accessKeys[0] };
   }
-  return client.accessKeys[0];
+  return { clientId: client.clientId, accessKeys: client.accessKeys[0] };
 }
 
 module.exports = {

@@ -62,6 +62,7 @@ const LicenseSchema = new mongoose.Schema(
       ],
       accessKeys: [
         {
+          PolicyId: String,
           AccessKeyId: String,
           CreateDate: Date,
           SecretAccessKey: String,
