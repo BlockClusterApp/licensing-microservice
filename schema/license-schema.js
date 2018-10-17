@@ -45,6 +45,13 @@ const LicenseSchema = new mongoose.Schema(
         UserId: String,
         UserName: String,
       },
+      ecrRepositories: [
+        {
+          RepoType: String,
+          Arn: String,
+          RegistryId: String,
+        },
+      ],
       policies: [
         {
           PolicyName: String,
@@ -95,7 +102,7 @@ const LicenseSchema = new mongoose.Schema(
 );
 LicenseSchema.plugin(beautifyUnique);
 LicenseSchema.index({
-  'licenseDetails.license_key': 1,
+  'licenseDetails.licenseKey': 1,
 });
 
 const LicenseModel = mongoose.model('license', LicenseSchema);

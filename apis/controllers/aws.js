@@ -1,8 +1,18 @@
 const aws = require('aws-sdk');
 const randomstring = require('randomstring');
 const License = require('../../schema/license-schema');
+const config = require('../../config');
 
-const IAM = new aws.IAM();
+const IAM = new aws.IAM({
+  accessKeyId: process.env.LICENCE_IAM_ACCESS_KEY_ID,
+  secretAccessKey: process.env.LICENCE_SECRET_ACCESS_KEY,
+});
+
+const ECR = new aws.ECR({
+  accessKeyId: config.aws.ACCESS_KEY_ID,
+  secretAccessKey: config.aws.SECRET_ACCESS_KEY,
+  region: 'us-west-2',
+});
 
 function generateImagePullPolicy(clientId) {
   const policy = `
@@ -138,6 +148,21 @@ async function generateAWSCreds(licenseKey) {
   return { clientId: client.clientId, accessKeys: client.accessKeys[0] };
 }
 
+function createECRRepository(clientId, repoType = 'webapp') {
+  const params = {
+    repositoryName: `${clientId}-${repoType}`,
+  };
+
+  return new Promise((resolve, reject) => {
+    ECR.createRepository(params, (err, data) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(data);
+    });
+  });
+}
+
 module.exports = {
   createAccessToken,
   deleteUserPolicy,
@@ -145,4 +170,5 @@ module.exports = {
   generateUser,
   generateImagePullPolicy,
   generateAWSCreds,
+  createECRRepository,
 };

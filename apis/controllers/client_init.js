@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt-nodejs');
+const randomstring = require('randomstring');
+const raven = require('raven');
+
 const License = require('../../schema/license-schema');
 const licensesModule = require('./license_init');
+const aws = require('../controllers/aws');
 const Email = require('./send-email');
 
 const rollBackClientCreation = async clientObjectId => {
@@ -9,22 +13,33 @@ const rollBackClientCreation = async clientObjectId => {
 };
 
 function makeAccessKey() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return `${new Date().getTime()}${randomstring.generate({ readable: false, length: 20 })}`;
+  // let text = '';
+  // const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (let i = 0; i < 8; i += 1) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
+  // for (let i = 0; i < 8; i += 1) {
+  //   text += possible.charAt(Math.floor(Math.random() * possible.length));
+  // }
 
-  return text;
+  // return text;
 }
 
 const createClient = async clientDetails => {
+  const clientId = randomstring.generate({
+    readable: true,
+    length: 10,
+  });
   // eslint-disable no-param-reassign
   clientDetails = Object.assign(clientDetails, {
     createdAt: new Date(),
-    clientId: Date.now(),
+    clientId,
     status: true,
+    awsMetadata: {
+      user: {},
+      ecrRepositories: [],
+      policies: [],
+      accessKeys: [],
+    },
   });
   const hashable = makeAccessKey();
   console.log(hashable);
@@ -57,6 +72,27 @@ const createClient = async clientDetails => {
       return Promise.reject(error);
     }
   }
+
+  try {
+    const ecrRepository = aws.createECRRepository(clientId, 'webapp');
+    await License.update(
+      {
+        clientId,
+      },
+      {
+        $push: {
+          'awsMetdata.ecrRepositories': {
+            RepoType: 'webapp',
+            Arn: ecrRepository.repositoryArn,
+            RegistryId: ecrRepository.registryId,
+          },
+        },
+      }
+    );
+  } catch (err) {
+    raven.captureException(err);
+  }
+
   await Email.processAndSend(
     clientDetails.clientDetails.emailId,
     clientDetails.clientDetails.clientName,

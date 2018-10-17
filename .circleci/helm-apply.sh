@@ -7,7 +7,7 @@ aws s3 cp s3://bc-kubeconfig/config ~/.kube/config
 helm init --client-only
 
 setVariables="NODE_ENV=${NODE_ENV},image=${IMAGE_NAME},commitHash=${COMMIT_HASH},COMMIT_HASH=${COMMIT_HASH}"
-releaseName="enterprise-app-${NODE_ENV}"
+releaseName="enterprise-app-${NODE_ENV},LICENCE_IAM_ACCESS_KEY_ID=${LICENCE_IAM_ACCESS_KEY_ID},LICENCE_SECRET_ACCESS_KEY=${LICENCE_SECRET_ACCESS_KEY}"
 
 echo $setVariables
 

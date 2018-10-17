@@ -44,6 +44,10 @@ spec:
           value: {{ template "server.namespace" . }}
         - name: COMMIT_HASH
           value: {{ .Values.COMMIT_HASH }}
+        - name: LICENCE_SECRET_ACCESS_KEY
+          value: {{ .Values.LICENCE_SECRET_ACCESS_KEY }}
+        - name: LICENCE_IAM_ACCESS_KEY_ID
+          value: {{ .Values.LICENCE_IAM_ACCESS_KEY_ID }}
         - name: SENDGRID_API_KEY
           valueFrom:
             secretKeyRef:
