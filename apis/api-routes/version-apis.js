@@ -7,7 +7,7 @@ router.post('/takeIn', (req, res, next) => {
   if (req.body.version && req.body.app) {
     return next({
       status: 400,
-      error: 'version & app required',
+      message: 'version & app required',
     });
   }
   return versionController

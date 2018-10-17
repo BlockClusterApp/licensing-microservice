@@ -53,7 +53,7 @@ app.get('/ping', (req, res) => {
 });
 
 app.get('/error', (req, res, next) => next({
-  error: 'abc',
+  message: 'abc',
   status: 400,
 }));
 function emittion(topic, data) {

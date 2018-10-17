@@ -38,7 +38,7 @@ router.get('/filter', (req, res, next) => {
 router.post('/license-generate', async (req, res, next) => {
   if (!req.body.clientId) {
     return next({
-      error: 'Invalid client',
+      message: 'Invalid client',
       status: 400,
     });
   }
@@ -50,7 +50,7 @@ router.post('/license-generate', async (req, res, next) => {
 
 router.post('/reset-secret', async (req, res, next) => {
   if (!req.body.clientId) {
-    return next({ error: 400, message: 'invalid client Id' });
+    return next({ status: 400, message: 'invalid client Id' });
   }
   const updateStat = await clientController.resetclientSecret(req.body.clientId);
   return res.json(updateStat);

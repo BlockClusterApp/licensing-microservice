@@ -76,7 +76,7 @@ const disableClient = async clientObjectId => {
     }
   );
   if (disabled.nModified === 0) {
-    return Promise.reject({ error: 'Client Disable Failed. unable to update.', status: 400 });
+    return Promise.reject({ message: 'Client Disable Failed. unable to update.', status: 400 });
   }
   return disabled;
 };
@@ -102,7 +102,7 @@ const resetclientSecret = async clientId => {
     .then(data => {
       if (!data) {
         return Promise.reject({
-          error: 'client not found!',
+          message: 'client not found!',
           status: 400,
         });
       }
@@ -110,7 +110,7 @@ const resetclientSecret = async clientId => {
       return data.save(async (error, saved) => {
         if (error) {
           return Promise.reject({
-            error: 'Unable to Update new Secret.',
+            message: 'Unable to Update new Secret.',
             status: 500,
           });
         }
@@ -132,7 +132,7 @@ const clientLicenseUpdate = async payload => {
   const clientDoc = await License.findOne({ _id: clientObjectId });
   if (clientDoc.licenseDetails && clientDoc.licenseDetails.licenseKey) {
     return Promise.reject({
-      error: 'License Key already Exists. cannot update.',
+      message: 'License Key already Exists. cannot update.',
       status: 400,
     });
   }
