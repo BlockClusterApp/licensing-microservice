@@ -4,8 +4,8 @@ const debug = require('debug')('api:index');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-// const Sentry = require('@sentry/node');
-const Raven = require('raven');
+const Sentry = require('@sentry/node');
+// const Raven = require('raven');
 
 const app = express();
 app.use(cors());
@@ -13,18 +13,26 @@ const http = require('http').Server(app);
 const io = require('socket.io').listen(http);
 const config = require('./config');
 
-Raven.config(config.dsnSentry).install();
+// Raven.config(config.dsnSentry).install();
 const loginController = require('./apis/controllers/auth.client');
 const apiRoutes = require('./apis/route.includes');
 
-// Sentry.init({ dsn: config.dsnSentry, environment: process.env.NODE_ENV });
+Sentry.init({
+  dsn: config.dsnSentry,
+  environment: process.env.NODE_ENV,
+  release: process.env.COMMIT_HASH,
+  maxBreadcrumbs: 20,
+  attachStacktrace: true,
+  serverName: `licensing Microservice ${process.env.NODE_ENV}`,
+  enabled: true,
+});
 
 mongoose.connect(
   config.mongo.url,
   { useNewUrlParser: true }
 );
 
-app.use(Raven.requestHandler());
+// app.use(Raven.requestHandler());
 
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
@@ -57,7 +65,7 @@ app.get('/client/oauth', async (req, res) => {
 
 apiRoutes.includeRoutes(app);
 
-// app.use(Sentry.Handlers.errorHandler());
+app.use(Sentry.Handlers.errorHandler());
 // eslint-ignore-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // set locals, only providing error in development

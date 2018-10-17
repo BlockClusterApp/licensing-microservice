@@ -26,8 +26,10 @@ api.includeRoutes = app => {
     algorithms: ['RS256'],
   });
   function isAuthenticatedPages(req, res, next) {
+    console.log(req.headers['x-access-key']);
     if (
-      new Date(
+      req.headers['x-access-key'] === undefined
+      || new Date(
         Number(
           req.headers['x-access-key']
             .split('')
