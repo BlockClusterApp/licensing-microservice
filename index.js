@@ -52,10 +52,6 @@ app.get('/ping', (req, res) => {
   res.status(200).send('pong');
 });
 
-app.get('/error', (req, res, next) => next({
-  message: 'abc',
-  status: 400,
-}));
 function emittion(topic, data) {
   return io.sockets.emit(`/${topic}`, data);
 }
