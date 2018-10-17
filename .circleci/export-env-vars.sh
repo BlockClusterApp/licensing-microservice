@@ -3,8 +3,10 @@
 export COMMIT_HASH=${CIRCLE_SHA1}
 if [ "$CIRCLE_TAG" = "production" ] || [ "$CIRCLE_BRANCH" = "master" ] || [ "$CIRCLE_BRANCH" = "hot-fix" ];
 then
-  export NODE_ENV=production
-  export CLUSTER_PREFIX="production-ap-south-1b";
+  export NODE_ENV=dev
+  export CLUSTER_PREFIX="dev";
+  # export NODE_ENV=production
+  # export CLUSTER_PREFIX="production-ap-south-1b";
 elif [ "$CIRCLE_TAG" = "staging" ] || [ "$CIRCLE_BRANCH"  = "staging" ];
 then
   export NODE_ENV=staging
