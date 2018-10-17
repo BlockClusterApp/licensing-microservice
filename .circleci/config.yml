@@ -75,7 +75,7 @@ jobs:
       - *restore_repo
       - run:
           name: 'Helm apply'
-          command: 'IS_TEST=1 ./.circleci/helm-apply.sh'
+          command: './.circleci/helm-apply.sh'
       - run:
           name: 'Notify build end'
           command: ./.circleci/build-end-notification.sh
