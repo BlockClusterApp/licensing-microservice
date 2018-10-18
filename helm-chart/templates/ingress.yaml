@@ -8,9 +8,17 @@ spec:
   tls:
   - hosts:
     - {{ template "server.host" . }}
+    - enterprise-api.blockcluster.io
     secretName: blockcluster-ssl
   rules:
   - host: {{ template "server.host" . }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "server.name" . }}-svc
+          servicePort: 80
+  - host: enterprise-api.blockcluster.io
     http:
       paths:
       - path: /
