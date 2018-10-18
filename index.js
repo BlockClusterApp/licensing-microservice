@@ -67,8 +67,6 @@ mongoose.connect(
   { useNewUrlParser: true }
 );
 
-// app.use(Raven.requestHandler());
-
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
 app.use(
@@ -76,13 +74,13 @@ app.use(
     extended: true,
   })
 );
-function emittion(topic, data) {
+function emission(topic, data) {
   return io.sockets.emit(`/${topic}`, data);
 }
 app.get('/client/oauth', async (req, res) => {
   const mainData = await loginController.oauthController(req.query.code, JSON.parse(req.query.state));
 
-  emittion(mainData.topic, mainData.tokens.id_token);
+  emission(mainData.topic, mainData.tokens.id_token);
 
   return res.send('You Are Good to Go!');
 });
@@ -108,7 +106,7 @@ app.use((err, req, res, next) => {
     errorObj.head = err.head || null;
   } else if (err.status === 401 || err.status === 403) {
     errorObj.head = err.head || null;
-    errorObj.message = err.message || 'Unauthorised User';
+    errorObj.message = err.message || 'Unauthorized User';
   } else if (err.status === 500) {
     errorObj.head = err.head || null;
 
@@ -123,7 +121,7 @@ app.use((err, req, res, next) => {
 
     errorObj.message = err.message;
 
-    errorObj.message = 'Unknown Error Occured';
+    errorObj.message = 'Unknown Error Occurred';
   }
 
   next();
