@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors');
 
 const Sentry = require('@sentry/node');
 
@@ -27,23 +26,32 @@ switch (process.env.NODE_ENV) {
     whileListedURLs.push('*');
 }
 
-const corsOptions = {
-  origin(origin, cb) {
-    if (!origin || whileListedURLs.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'));
-    }
-  },
-};
-
 const app = express();
 
 app.get('/ping', (req, res) => {
   res.status(200).send('pong');
 });
 
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  if ((req.get('origin') && whileListedURLs.includes(req.get('origin'))) || whileListedURLs.includes(req.headers.host)) {
+    res.header('Access-Control-Allow-Origin', req.get('origin'));
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Access-Control-Allow-Headers, Content-Type, Authorization, Content-Length, X-Requested-With, Pragma, Cache-Control, If-Modified-Since, withCredentials, x-access-key, X-Access-Key'
+    );
+
+    // intercept OPTIONS method
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 // eslint-disable-next-line import/order
 const http = require('http').Server(app);
 // eslint-disable-next-line import/order
@@ -88,6 +96,10 @@ app.get('/client/oauth', async (req, res) => {
 });
 
 apiRoutes.includeRoutes(app);
+
+app.use('/', (req, res) => {
+  res.send('Hi');
+});
 
 app.use(Sentry.Handlers.errorHandler());
 // eslint-ignore-next-line no-unused-vars
