@@ -7,7 +7,6 @@ module.exports = (req, res, next) => {
     return next();
   }
   const b64Token = auth.split(' ')[1];
-  console.log('Token', b64Token);
   if (!b64Token) {
     return res.status(401).send({ success: false, error: 'Unauthorized' });
   }

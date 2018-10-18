@@ -17,7 +17,7 @@ router.post('/licence/validate', async (req, res) => {
   };
   if (req.authToken === 'fetch-token' && req.licenceKey) {
     const licence = await Licence.findOne({
-      'licenceDetails.licenseKey': req.licenceKey,
+      'licenseDetails.licenseKey': req.licenceKey,
     });
     if (!licence) {
       return res.send({
@@ -26,7 +26,7 @@ router.post('/licence/validate', async (req, res) => {
         errorCode: 401,
       });
     }
-    const token = loginController.generateToken(req.licenceKey);
+    const token = loginController.generateToken(licence.licenseDetails.licenseKey);
     return res.send({
       success: true,
       message: token,

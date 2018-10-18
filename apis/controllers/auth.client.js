@@ -71,10 +71,7 @@ function generateToken(key) {
     {
       key,
     },
-    config.jwt.secret,
-    {
-      expiresIn: '600m',
-    }
+    config.jwt.secret
   );
   const accessToken = Buffer.from(token).toString('base64');
   return accessToken;
