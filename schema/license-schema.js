@@ -4,7 +4,7 @@ const beautifyUnique = require('mongoose-beautiful-unique-validation');
 const LicenseSchema = new mongoose.Schema(
   {
     clientId: {
-      type: Number,
+      type: String,
       unique: 'Client ID already Exists.',
     },
     licenseDetails: {
