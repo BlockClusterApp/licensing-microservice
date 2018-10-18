@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const debug = require('debug')('api:index');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
@@ -10,6 +9,7 @@ const loginController = require('./apis/controllers/auth.client');
 const apiRoutes = require('./apis/route.includes');
 
 const whileListedURLs = [];
+
 switch (process.env.NODE_ENV) {
   case 'production':
     whileListedURLs.push('https://app.blockcluster.io');
@@ -24,12 +24,12 @@ switch (process.env.NODE_ENV) {
     whileListedURLs.push('https://dev.blockcluster.io');
     break;
   default:
-    whileListedURLs.push('http://localhost:3000');
+    whileListedURLs.push('*');
 }
 
 const corsOptions = {
   origin(origin, cb) {
-    if (whileListedURLs.includes(origin)) {
+    if (!origin || whileListedURLs.includes(origin)) {
       cb(null, true);
     } else {
       cb(new Error('Not allowed by CORS'));
@@ -38,6 +38,11 @@ const corsOptions = {
 };
 
 const app = express();
+
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
 app.use(cors(corsOptions));
 // eslint-disable-next-line import/order
 const http = require('http').Server(app);
@@ -71,17 +76,6 @@ app.use(
     extended: true,
   })
 );
-
-app.use((req, res, next) => {
-  debug('Headers', req.headers);
-
-  next();
-});
-
-app.get('/ping', (req, res) => {
-  res.status(200).send('pong');
-});
-
 function emittion(topic, data) {
   return io.sockets.emit(`/${topic}`, data);
 }
