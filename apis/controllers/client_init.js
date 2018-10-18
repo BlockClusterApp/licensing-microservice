@@ -49,6 +49,7 @@ const createClient = async clientDetails => {
   try {
     created = await saveableDoc.save();
   } catch (err) {
+    console.log(err);
     return Promise.reject(err);
   }
 
@@ -68,6 +69,7 @@ const createClient = async clientDetails => {
       );
       return Object.assign(bindable, license);
     } catch (error) {
+      console.log(error);
       await rollBackClientCreation(created._id);
       return Promise.reject(error);
     }
@@ -90,6 +92,7 @@ const createClient = async clientDetails => {
       }
     );
   } catch (err) {
+    console.log(err);
     raven.captureException(err);
   }
 
