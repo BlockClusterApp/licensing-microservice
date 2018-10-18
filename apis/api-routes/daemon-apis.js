@@ -4,7 +4,10 @@ const router = express.Router();
 const Licence = require('../../schema/license-schema');
 const loginController = require('../controllers/auth.client');
 const aws = require('../controllers/aws');
+const licenceInjector = require('../middlewares/license-injector');
 const LogController = require('../controllers/log-store');
+
+router.use(licenceInjector);
 
 router.post('/licence/validate', async (req, res) => {
   const metadata = {
@@ -47,6 +50,7 @@ router.post('/licence/validate', async (req, res) => {
 
 router.post('/aws-creds', async (req, res) => {
   const result = await aws.generateAWSCreds(req.licenceKey);
+  console.log('Generating aws creds', result);
   res.send(result);
 });
 

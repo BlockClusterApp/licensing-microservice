@@ -2,7 +2,6 @@ const jwt = require('express-jwt');
 const cors = require('cors');
 const jwksRsa = require('jwks-rsa');
 const config = require('../config');
-const licenceInjector = require('./middlewares/license-injector');
 
 const api = {};
 
@@ -12,6 +11,7 @@ api.includeRoutes = app => {
   const cli = require('./api-routes/cli-apis');
   const daemon = require('./api-routes/daemon-apis');
   const versions = require('./api-routes/version-apis');
+
   const checkJwt = jwt({
     // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
     secret: jwksRsa.expressJwtSecret({
@@ -58,9 +58,8 @@ api.includeRoutes = app => {
   // app.use('/versions/*', versionAuth);
   app.use('/versions', versions);
 
-  app.options('/daemon/*', cors());
-  daemon.use(licenceInjector);
-  app.use('/daemon/*', daemon);
+  app.use('/daemon', cors());
+  app.use('/daemon', daemon);
 };
 
 module.exports = api;

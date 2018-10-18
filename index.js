@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const Sentry = require('@sentry/node');
 
@@ -27,6 +29,9 @@ switch (process.env.NODE_ENV) {
 }
 
 const app = express();
+
+app.use(morgan('dev'));
+app.use(helmet());
 
 app.get('/ping', (req, res) => {
   res.status(200).send('pong');
@@ -94,10 +99,6 @@ app.get('/client/oauth', async (req, res) => {
 });
 
 apiRoutes.includeRoutes(app);
-
-app.use('/', (req, res) => {
-  res.send('Hi');
-});
 
 app.use(Sentry.Handlers.errorHandler());
 // eslint-ignore-next-line no-unused-vars
