@@ -37,13 +37,13 @@ module.exports = `<!DOCTYPE html>
     <h4 style="margin-bottom: 0px">Hi
         <%= user.name %>,</h4>
     <p style="margin-top: 5px;">
-       Its Confidentaial!
+       Its Confidential!
        <% if (licenseKey) {%>
         License Key: <%= licenseKey %>
         <% } %>
-
-       Your secret acess key is : <%= accessKey %>
-      
+        <% if (accessKey) {%>
+       Your secret access key is : <%= accessKey %>
+       <% } %>
 
         <br />
         <br />
