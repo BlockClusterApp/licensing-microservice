@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const versionController = require('../controllers/version_save');
+const versionController = require('../controllers/version');
 
 router.post('/takeIn', (req, res, next) => {
   if (!req.body.version || !req.body.app) {

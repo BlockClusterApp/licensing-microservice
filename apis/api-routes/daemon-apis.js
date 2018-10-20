@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Licence = require('../../schema/license-schema');
 const loginController = require('../controllers/auth.client');
+const versionController = require('../controllers/version');
 const aws = require('../controllers/aws');
 const licenceInjector = require('../middlewares/license-injector');
 const LogController = require('../controllers/log-store');
@@ -12,7 +13,7 @@ router.use(licenceInjector);
 router.post('/licence/validate', async (req, res) => {
   const metadata = {
     blockclusterAgentVersion: '1.0',
-    webappVersion: '1.0',
+    webappVersion: await versionController.getLatest('webapp'),
     shouldDaemonDeployWebapp: false,
   };
   if (req.authToken === 'fetch-token' && req.licenceKey) {
