@@ -13,6 +13,19 @@ const saveVersion = async (version, app) => {
   });
 };
 
+const searchVersion = async query => {
+  const executable = {};
+  if (query) {
+    Object.assign(executable, query);
+  }
+  return VersionModel.find(executable).exec();
+};
+
+const getLatest = async app => VersionModel.findOne({ app })
+  .sort({ createdAt: -1 })
+  .exec();
 module.exports = {
   saveVersion,
+  searchVersion,
+  getLatest,
 };
