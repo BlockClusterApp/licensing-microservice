@@ -15,8 +15,7 @@ const ECR = new aws.ECR({
 });
 
 function generateImagePullPolicy(clientId) {
-  const policy = `
-  {
+  const policy = `{
     "Version": "2012-10-17",
     "Statement": [
         {
@@ -43,6 +42,7 @@ function generateImagePullPolicy(clientId) {
         }
     ]
   }`;
+  console.log(policy);
   return new Promise((resolve, reject) => {
     IAM.createPolicy(
       {
@@ -122,7 +122,7 @@ async function generateAWSCreds(licenseKey) {
     throw new Error(`Cannot generate AWS creds for invalid license key ${licenseKey}`);
   }
 
-  if (!(client.accessKeys && client.accessKeys.length > 0)) {
+  if (!(client.awsMetaData && client.awsMetaData.accessKeys && client.awsMetaData.accessKeys.length > 0)) {
     const awsPolicy = await generateImagePullPolicy(client.clientId);
     const awsUser = await generateUser(client.clientId);
     // eslint-disable-next-line no-unused-vars
@@ -143,9 +143,9 @@ async function generateAWSCreds(licenseKey) {
       }
     );
     const licence = await License.findOne({ _id: client._id });
-    return { clientId: client.clientId, accessKeys: licence.accessKeys[0] };
+    return { clientId: client.clientId, accessKeys: licence.awsMetaData.accessKeys[0] };
   }
-  return { clientId: client.clientId, accessKeys: client.accessKeys[0] };
+  return { clientId: client.clientId, accessKeys: client.awsMetaData.accessKeys[0] };
 }
 
 function createECRRepository(clientId, repoType = 'webapp') {

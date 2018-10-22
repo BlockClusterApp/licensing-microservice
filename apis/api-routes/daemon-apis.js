@@ -51,7 +51,6 @@ router.post('/licence/validate', async (req, res) => {
 
 router.post('/aws-creds', async (req, res) => {
   const result = await aws.generateAWSCreds(req.licenceKey);
-  console.log('Generating aws creds', result);
   res.send(result);
 });
 
