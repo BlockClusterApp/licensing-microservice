@@ -25,8 +25,43 @@ function makeAccessKey() {
 }
 
 const createClient = async clientDetails => {
+  async function sendConfidentialMail(_clientDetails, hash, licenceKey) {
+    return Email.processAndSend(
+      _clientDetails.clientDetails.emailId,
+      _clientDetails.clientDetails.clientName,
+      'Confidential Secret Key',
+      'Secret Key Confidential',
+      'email-accessKey.ejs',
+      hash,
+      licenceKey
+    );
+  }
+
+  async function generateECRRepository(clientId) {
+    try {
+      const ecrRepository = await aws.createECRRepository(clientId, 'webapp');
+      await License.updateOne(
+        {
+          clientId,
+        },
+        {
+          $push: {
+            'awsMetaData.ecrRepositories': {
+              RepoType: 'webapp',
+              Arn: ecrRepository.repositoryArn,
+              RegistryId: ecrRepository.registryId,
+            },
+          },
+        }
+      );
+    } catch (err) {
+      console.log(err);
+      raven.captureException(err);
+    }
+  }
+
   const clientId = randomstring.generate({
-    readable: true,
+    charset: 'abcdefghijkmnpqrstuvwxyz23456789',
     length: 10,
   });
   // eslint-disable no-param-reassign
@@ -42,7 +77,7 @@ const createClient = async clientDetails => {
     },
   });
   const hashable = makeAccessKey();
-  console.log(hashable);
+
   clientDetails.access_key = bcrypt.hashSync(hashable);
   const saveableDoc = new License(clientDetails);
   let created;
@@ -58,52 +93,19 @@ const createClient = async clientDetails => {
   if (clientDetails.license.gen_license === true && !Number.isNaN(clientDetails.license.expire)) {
     try {
       license = await licensesModule.generateNewLicense(created._id, !Number.isNaN(clientDetails.license.expire) ? Number(clientDetails.license.expire) : null);
-      await Email.processAndSend(
-        clientDetails.clientDetails.emailId,
-        clientDetails.clientDetails.clientName,
-        'Confidential Secret Key',
-        'Secret Key Confidential',
-        'email-accessKey.ejs',
-        hashable,
-        license.licenseKey
-      );
+      await generateECRRepository(clientId);
+      await sendConfidentialMail(clientDetails, hashable, license.licenceKey);
       return Object.assign(bindable, license);
     } catch (error) {
       console.log(error);
       await rollBackClientCreation(created._id);
       return Promise.reject(error);
     }
+  } else {
+    await generateECRRepository(clientId);
+    await sendConfidentialMail(clientDetails, hashable);
   }
 
-  try {
-    const ecrRepository = aws.createECRRepository(clientId, 'webapp');
-    await License.update(
-      {
-        clientId,
-      },
-      {
-        $push: {
-          'awsMetdata.ecrRepositories': {
-            RepoType: 'webapp',
-            Arn: ecrRepository.repositoryArn,
-            RegistryId: ecrRepository.registryId,
-          },
-        },
-      }
-    );
-  } catch (err) {
-    console.log(err);
-    raven.captureException(err);
-  }
-
-  await Email.processAndSend(
-    clientDetails.clientDetails.emailId,
-    clientDetails.clientDetails.clientName,
-    'Confidential Secret Key',
-    'Secret Key Confidential',
-    'email-accessKey.ejs',
-    hashable
-  );
   return bindable;
 };
 

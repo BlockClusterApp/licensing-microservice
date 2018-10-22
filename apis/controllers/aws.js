@@ -54,7 +54,7 @@ function generateImagePullPolicy(clientId) {
         if (err) {
           return reject(err);
         }
-        return resolve(data);
+        return resolve(data.Policy);
       }
     );
   });
@@ -67,7 +67,7 @@ function generateUser(clientId) {
   return new Promise((resolve, reject) => {
     IAM.createUser(params, (err, data) => {
       if (err) return reject(err);
-      return resolve(data);
+      return resolve(data.User);
     });
   });
 }
@@ -108,7 +108,7 @@ function createAccessToken(user) {
   return new Promise((resolve, reject) => {
     IAM.createAccessKey(params, (err, data) => {
       if (err) return reject(err);
-      return resolve(data);
+      return resolve(data.AccessKey);
     });
   });
 }
@@ -158,7 +158,7 @@ function createECRRepository(clientId, repoType = 'webapp') {
       if (err) {
         return reject(err);
       }
-      return resolve(data);
+      return resolve(data.repository);
     });
   });
 }
