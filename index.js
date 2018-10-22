@@ -71,7 +71,7 @@ Sentry.init({
   release: process.env.COMMIT_HASH,
   maxBreadcrumbs: 20,
   attachStacktrace: true,
-  serverName: `licensing Microservice ${process.env.NODE_ENV}`,
+  serverName: `licensing Microservice ${process.env.NODE_ENV || 'local'}`,
   enabled: true,
 });
 
