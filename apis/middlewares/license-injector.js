@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
   }
   let token = Buffer.from(b64Token.trim(), 'base64').toString();
   if (token === 'fetch-token') {
-    req.licenceKey = req.body.licence;
+    req.licenceKey = Buffer.from(req.body.licence, 'base64').toString();
     req.authToken = token;
     return next();
   }

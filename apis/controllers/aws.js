@@ -128,7 +128,7 @@ async function generateAWSCreds(licenseKey) {
     // eslint-disable-next-line no-unused-vars
     await applyPolicyToUser(awsPolicy, awsUser);
     const awsCreds = await createAccessToken(awsUser);
-    await License.update(
+    await License.updateOne(
       {
         _id: client._id,
       },
@@ -143,9 +143,11 @@ async function generateAWSCreds(licenseKey) {
       }
     );
     const licence = await License.findOne({ _id: client._id });
-    return { clientId: client.clientId, accessKeys: licence.awsMetaData.accessKeys[0] };
+    const registryIds = licence.awsMetaData.ecrRepositories.map(i => i.RegistryId);
+    return { clientId: client.clientId, accessKeys: licence.awsMetaData.accessKeys[0], registryIds };
   }
-  return { clientId: client.clientId, accessKeys: client.awsMetaData.accessKeys[0] };
+  const registryIds = client.awsMetaData.ecrRepositories.map(i => i.RegistryId);
+  return { clientId: client.clientId, accessKeys: client.awsMetaData.accessKeys[0], registryIds };
 }
 
 function createECRRepository(clientId, repoType = 'webapp') {
