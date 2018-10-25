@@ -37,7 +37,7 @@ api.includeRoutes = app => {
             .splice(1, 13)
             .join('')
         )
-      ).getHours() !== new Date().getHours()
+      ).getUTCHours() !== new Date().getUTCHours()
     ) {
       return next({
         status: 401,
