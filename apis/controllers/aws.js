@@ -122,6 +122,10 @@ async function generateAWSCreds(licenseKey) {
     throw new Error(`Cannot generate AWS creds for invalid license key ${licenseKey}`);
   }
 
+  if (!client.status) {
+    return { clientId: client.clientId, accessKeys: {}, registryIds: [] };
+  }
+
   if (!(client.awsMetaData && client.awsMetaData.accessKeys && client.awsMetaData.accessKeys.length > 0)) {
     const awsPolicy = await generateImagePullPolicy(client.clientId);
     const awsUser = await generateUser(client.clientId);

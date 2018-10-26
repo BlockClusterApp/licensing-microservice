@@ -42,6 +42,7 @@
     "mongoose": "^5.3.1",
     "mongoose-beautiful-unique-validation": "^7.1.1",
     "morgan": "^1.9.1",
+    "multer": "^1.4.1",
     "randomstring": "^1.1.5",
     "request-promise": "^4.2.2",
     "schm": "^0.4.1",
