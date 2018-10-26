@@ -46,7 +46,9 @@
     "randomstring": "^1.1.5",
     "request-promise": "^4.2.2",
     "schm": "^0.4.1",
-    "socket.io": "^2.1.1"
+    "socket.io": "^2.1.1",
+    "winston": "^3.1.0",
+    "winston-daily-rotate-file": "^3.3.5"
   },
   "devDependencies": {
     "eslint": "^5.6.1",

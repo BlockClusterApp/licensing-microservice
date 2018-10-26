@@ -1,5 +1,7 @@
 const express = require('express');
 const multer = require('multer');
+const winston = require('winston');
+require('winston-daily-rotate-file');
 
 const router = express.Router();
 const Licence = require('../../schema/license-schema');
@@ -7,7 +9,23 @@ const loginController = require('../controllers/auth.client');
 // const versionController = require('../controllers/version');
 const aws = require('../controllers/aws');
 const licenceInjector = require('../middlewares/license-injector');
-const LogController = require('../controllers/log-store');
+
+const clientLogger = winston.createLogger({
+  format: winston.format.json(),
+  level: 'info',
+  transport: [new winston.transports.Console()],
+});
+if (['production', 'staging'].includes(process.env.NODE_ENV)) {
+  clientLogger.add(
+    new winston.transports.DailyRotateFile({
+      filename: '/logs/client-logs-%DATE%.log',
+      datePattern: 'YYYY-MM-DD-HH',
+      zippedArchive: false,
+      maxFiles: '2d',
+      maxSize: '2g',
+    })
+  );
+}
 
 const upload = multer();
 
@@ -68,11 +86,18 @@ router.post('/info/:type', upload.none(), (req, res) => {
     return res.status(400).send('Unauthorized');
   }
   console.log('Body', req.body);
-  LogController.storeLogs({
-    type: req.params.type,
-    info: req.body.info,
-    key: req.licenceKey,
-  });
+  if (Array.isArray(req.body)) {
+    req.body.forEach(b => {
+      const a = { ...b };
+      delete a.date;
+      const log = {
+        timestamp: new Date(Math.floor(b.date) * 1000),
+        ...a,
+      };
+
+      clientLogger.info(log);
+    });
+  }
   res.send({
     success: true,
   });
