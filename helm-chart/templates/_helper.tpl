@@ -28,7 +28,7 @@ enterprise-api-dev.blockcluster.io
 
 {{- define "server.monogUrl" -}}
 {{- if eq .Values.NODE_ENV "production" -}}
-mongodb://35.161.9.16:31972
+{{ .Values.MONGO_URL }}
 {{- else if eq .Values.NODE_ENV "staging" -}}
 mongodb://35.161.9.16:31972
 {{- else if eq .Values.NODE_ENV "test" -}}
