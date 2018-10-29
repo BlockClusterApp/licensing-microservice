@@ -85,7 +85,6 @@ router.post('/info/:type', upload.none(), (req, res) => {
   if (!['nodes', 'pods', 'logs'].includes(req.params.type)) {
     return res.status(400).send('Unauthorized');
   }
-  console.log('Body', req.body);
   if (Array.isArray(req.body)) {
     req.body.forEach(b => {
       const a = { ...b };
