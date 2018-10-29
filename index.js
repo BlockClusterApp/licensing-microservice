@@ -75,10 +75,17 @@ Sentry.init({
   enabled: true,
 });
 
-mongoose.connect(
-  config.mongo.url,
-  { useNewUrlParser: true }
-);
+mongoose
+  .connect(
+    config.mongo.url,
+    { useNewUrlParser: true }
+  )
+  .then(
+    () => {
+      console.log('Connected to Mongo');
+    },
+    err => console.log('Error connecting to Mongo', err)
+  );
 
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
