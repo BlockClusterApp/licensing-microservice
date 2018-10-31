@@ -86,13 +86,17 @@ const LicenseSchema = new mongoose.Schema(
       // if exist
       type: String,
     },
-    serviceIncluded: {
+    servicesIncluded: {
       /**
        * so in this we can d like below:
        * {payment: true}
        * {voucher: true}
        * */
       type: Object,
+    },
+    agentMeta: {
+      daemonVersion: String,
+      webAppVersion: String,
     },
   },
   {

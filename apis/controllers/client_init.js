@@ -75,6 +75,14 @@ const createClient = async clientDetails => {
       policies: [],
       accessKeys: [],
     },
+    servicesIncluded: {
+      Payments: true,
+      SupportTicket: true,
+      Vouchers: true,
+      Invoice: true,
+      CardToCreateNetwork: true,
+      Hyperion: true,
+    },
   });
   const hashable = makeAccessKey();
 

@@ -32,7 +32,7 @@ const upload = multer();
 router.use(licenceInjector);
 
 router.post('/licence/validate', async (req, res) => {
-  const licence = await Licence.findOne({
+  let licence = await Licence.findOne({
     'licenseDetails.licenseKey': req.licenceKey,
   });
 
@@ -40,12 +40,65 @@ router.post('/licence/validate', async (req, res) => {
     blockclusterAgentVersion: '1.0',
     webappVersion: '', // await versionController.getLatest('webapp'),
     shouldDaemonDeployWebapp: false,
+    activatedFeatures: [],
   };
 
   if (licence) {
     metadata.clientId = licence.clientId;
+    if (!licence.servicesIncluded) {
+      await Licence.updateOne(
+        {
+          _id: licence._id,
+        },
+        {
+          $set: {
+            servicesIncluded: {
+              Payments: true,
+              SupportTicket: true,
+              Vouchers: true,
+              Invoice: true,
+              CardToCreateNetwork: true,
+              Hyperion: true,
+            },
+          },
+        }
+      );
+    }
+    licence = await Licence.findOne({
+      'licenseDetails.licenseKey': req.licenceKey,
+    });
+    metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
   }
 
+  function updateAgentInfo(_licence, body = {}) {
+    if (!_licence) {
+      return () => {};
+    }
+    const allowedKeys = ['daemonVersion', 'webAppVersion'];
+    if (body.webAppVersion === 'NotFetched') {
+      delete body.webAppVersion;
+    }
+    Object.keys(body).forEach(prop => {
+      if (!allowedKeys.includes(prop)) {
+        delete body[prop];
+      }
+    });
+    const agentInfo = { ..._licence.agentMeta, ...body };
+    return async () => {
+      await Licence.updateOne(
+        {
+          _id: _licence._id,
+        },
+        {
+          $set: {
+            agentMeta: agentInfo,
+          },
+        }
+      );
+    };
+  }
+
+  setTimeout(updateAgentInfo(licence, req.body), 0);
   if (req.authToken === 'fetch-token' && req.licenceKey) {
     if (!licence) {
       return res.send({
