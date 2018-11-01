@@ -56,4 +56,9 @@ router.post('/reset-secret', async (req, res, next) => {
   return res.json(updateStat);
 });
 
+router.patch('/', async (req, res) => {
+  const result = await clientController.patchClient(req.body);
+  return res.json(result);
+});
+
 module.exports = router;

@@ -194,6 +194,45 @@ const clientLicenseUpdate = async payload => {
   return license;
 };
 
+const patchClient = async body => {
+  const allowedKeys = [
+    'clientDetails.clientName',
+    'clientDetails.phone',
+    'clientDetails.emailId',
+    'clientMeta',
+    'clientLogo',
+    'agentMeta.webAppVersion',
+    'agentMeta.shouldDaemonDeployWebApp',
+    'servicesIncluded',
+  ];
+
+  const cleanedObject = {};
+  // eslint-disable-next-line no-unused-vars
+  const { updatedBy, client } = body;
+
+  Object.keys(client).forEach(clientKey => {
+    if (!allowedKeys.includes(clientKey)) {
+      return;
+    }
+    cleanedObject[clientKey] = client[clientKey];
+  });
+
+  await License.updateOne(
+    {
+      _id: client._id,
+    },
+    {
+      $set: {
+        ...cleanedObject,
+      },
+    }
+  );
+
+  return License.find({
+    _id: client._id,
+  });
+};
+
 module.exports = {
   createClient,
   clientLicenseUpdate,
@@ -201,4 +240,5 @@ module.exports = {
   disableClient,
   getClients,
   resetclientSecret,
+  patchClient,
 };

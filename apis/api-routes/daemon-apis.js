@@ -38,7 +38,7 @@ router.post('/licence/validate', async (req, res) => {
 
   const metadata = {
     blockclusterAgentVersion: '1.0',
-    webappVersion: '', // await versionController.getLatest('webapp'),
+    webAppVersion: '', // await versionController.getLatest('webapp'),
     shouldDaemonDeployWebapp: false,
     activatedFeatures: [],
   };

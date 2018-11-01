@@ -97,6 +97,7 @@ const LicenseSchema = new mongoose.Schema(
     agentMeta: {
       daemonVersion: String,
       webAppVersion: String,
+      shouldDaemonDeployWebApp: Boolean,
     },
   },
   {

@@ -40,7 +40,7 @@ app.get('/ping', (req, res) => {
 app.use((req, res, next) => {
   if (whileListedURLs.includes('*') || (req.get('origin') && whileListedURLs.includes(req.get('origin'))) || whileListedURLs.includes(req.headers.host)) {
     res.header('Access-Control-Allow-Origin', req.get('origin'));
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,PATCH');
     res.header('Access-Control-Allow-Credentials', true);
     res.header(
       'Access-Control-Allow-Headers',
