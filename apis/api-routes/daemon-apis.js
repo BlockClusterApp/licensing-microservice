@@ -7,6 +7,7 @@ const router = express.Router();
 const Licence = require('../../schema/license-schema');
 const loginController = require('../controllers/auth.client');
 // const versionController = require('../controllers/version');
+const MetricConsumer = require('../controllers/metric-consumer');
 const aws = require('../controllers/aws');
 const licenceInjector = require('../middlewares/license-injector');
 
@@ -154,6 +155,12 @@ router.post('/info/:type', upload.none(), (req, res) => {
     success: true,
   });
   return null;
+});
+
+router.post('/metrics', async (req, res) => {
+  console.log('Got metrics', req.body);
+  await MetricConsumer.consume(req);
+  res.json({ success: true });
 });
 
 module.exports = router;
