@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const beautifyUnique = require('mongoose-beautiful-unique-validation');
 
+const redis = require('../boot/redis');
+
 const LicenseSchema = new mongoose.Schema(
   {
     clientId: {
@@ -109,6 +111,17 @@ LicenseSchema.plugin(beautifyUnique);
 LicenseSchema.index({
   'licenseDetails.licenseKey': 1,
 });
+
+LicenseSchema.statics.findClientIdFromLicenceKey = async function fetchFromCache(licenceKey) {
+  const key = `client/${licenceKey}`;
+  let clientId = await redis.get(key);
+  if (!clientId) {
+    const licence = await this.findOne({ 'licenseDetails.licenseKey': licenceKey });
+    clientId = licence.clientId; // eslint-disable-line
+    await redis.setex(key, 60 * 60 * 24, clientId);
+  }
+  return clientId;
+};
 
 const LicenseModel = mongoose.model('license', LicenseSchema);
 

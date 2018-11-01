@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
+
+const Licence = require('../../schema/license-schema');
 const config = require('../../config');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   const auth = req.headers.authorization || req.headers.Authorization;
   if (!auth) {
     return next();
@@ -35,6 +37,9 @@ module.exports = (req, res, next) => {
     payload: jwt.decode(token),
     verified: !!verified,
   };
+
+  const clientId = await Licence.findClientIdFromLicenceKey(verified.key);
+  req.clientId = clientId;
   req.licenceKey = verified.key;
   return next();
 };

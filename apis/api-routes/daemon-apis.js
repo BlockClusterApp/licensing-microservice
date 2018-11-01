@@ -158,7 +158,6 @@ router.post('/info/:type', upload.none(), (req, res) => {
 });
 
 router.post('/metrics', async (req, res) => {
-  console.log('Got metrics', req.body);
   await MetricConsumer.consume(req);
   res.json({ success: true });
 });

@@ -12,8 +12,7 @@ module.exports = function initializeLuaScripts(redisClient) {
       .map(file => {
         const longName = path.basename(file, '.lua');
         const name = longName.split('-')[0];
-        const numberOfKeys = Number(longName.split('-'));
-
+        const numberOfKeys = Number(longName.split('-')[1]);
         return fs.readFileAsync(path.join(dir, file)).then(lua => ({
           name,
           options: { numberOfKeys, lua: lua.toString() },
@@ -21,5 +20,5 @@ module.exports = function initializeLuaScripts(redisClient) {
       });
   }
   const scripts = loadScripts(__dirname);
-  return scripts.each(command => redisClient.defineCommand(command.name, command.options));
+  return scripts.each(command => !console.log(`Loading redis function ${command.name}`) && redisClient.defineCommand(command.name, command.options));
 };
