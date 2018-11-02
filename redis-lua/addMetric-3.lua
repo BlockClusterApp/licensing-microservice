@@ -10,18 +10,6 @@ local rcall = redis.call
 
 local arrayLimit = 100
 
-local encoding = {}
--- base64 encoding
-function encoding.enc(data)
-  return data
-end
-
--- base64 decoding
-function encoding.dec(data)
-  return data
-end
-
-
 local helpers = {}
 -- insert to list
 function helpers.insert(hashKey, value)
@@ -34,8 +22,7 @@ function helpers.insert(hashKey, value)
 end
 
 
-local hashKey = KEYS[1] .. "/" .. KEYS[2] .. "/" .. KEYS[3]
-hashKey = encoding.enc(hashKey)
+local hashKey = "metric/" .. KEYS[1] .. "/" .. KEYS[2] .. "/" .. KEYS[3]
 
 local length = rcall("LLEN", hashKey)
 
