@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const clientController = require('../controllers/client_init');
+const MetricsController = require('../controllers/metric-consumer');
 
 router.post('/create_client', (req, res, next) => {
   if (!req.body.clientDetails) {
@@ -59,6 +60,21 @@ router.post('/reset-secret', async (req, res, next) => {
 router.patch('/', async (req, res) => {
   const result = await clientController.patchClient(req.body);
   return res.json(result);
+});
+
+router.get('/metrics/:type/:resourceName', async (req, res) => {
+  const metrics = await MetricsController.fetchMetrics(req.query.clientId, req.params.type, req.params.resourceName);
+  res.json(metrics);
+});
+
+router.get('/metrics/:type', async (req, res) => {
+  const metrics = await MetricsController.fetchMetrics(req.query.clientId, req.params.type);
+  res.json(metrics);
+});
+
+router.get('/metrics', async (req, res) => {
+  const metrics = await MetricsController.fetchMetrics(req.query.clientId);
+  res.json(metrics);
 });
 
 module.exports = router;
