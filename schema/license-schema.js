@@ -123,6 +123,20 @@ LicenseSchema.statics.findClientIdFromLicenceKey = async function fetchFromCache
   return clientId;
 };
 
+LicenseSchema.statics.findClientIdFromId = async function fetchFromCache(id) {
+  if (!id) {
+    return undefined;
+  }
+  const key = `client/${id}`;
+  let clientId = await redis.get(key);
+  if (!clientId) {
+    const licence = await this.findOne({ _id: id });
+    clientId = licence.clientId; // eslint-disable-line
+    await redis.setex(key, 60 * 60 * 24, clientId);
+  }
+  return clientId;
+};
+
 const LicenseModel = mongoose.model('license', LicenseSchema);
 
 module.exports = LicenseModel;
