@@ -3,6 +3,10 @@ module.exports = {
     url: process.env.MONGO_URL,
     db: 'admin',
   },
+  redis: {
+    host: process.env.REDIS_HOST || '35.161.9.16',
+    port: process.env.REDIS_PORT || '30645',
+  },
   jwt: {
     secret: 'uG6ETzvOBKUpTpYG1LBQ',
   },

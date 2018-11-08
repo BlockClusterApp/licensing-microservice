@@ -1,32 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const Sentry = require('@sentry/node');
-
 const loginController = require('./apis/controllers/auth.client');
 const apiRoutes = require('./apis/route.includes');
-
-const whileListedURLs = [];
-
-switch (process.env.NODE_ENV) {
-  case 'production':
-    whileListedURLs.push('https://app.blockcluster.io');
-    break;
-  case 'staging':
-    whileListedURLs.push('https://staging.blockcluster.io');
-    break;
-  case 'test':
-    whileListedURLs.push('https://test.blockcluster.io');
-    break;
-  case 'dev':
-    whileListedURLs.push('https://dev.blockcluster.io');
-    break;
-  default:
-    whileListedURLs.push('*');
-}
+const bootstrap = require('./boot');
 
 const app = express();
 
@@ -37,55 +16,12 @@ app.get('/ping', (req, res) => {
   res.status(200).send('pong');
 });
 
-app.use((req, res, next) => {
-  if (whileListedURLs.includes('*') || (req.get('origin') && whileListedURLs.includes(req.get('origin'))) || whileListedURLs.includes(req.headers.host)) {
-    res.header('Access-Control-Allow-Origin', req.get('origin'));
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Access-Control-Allow-Headers, Content-Type, Authorization, Content-Length, X-Requested-With, Pragma, Cache-Control, If-Modified-Since, withCredentials, x-access-key, X-Access-Key'
-    );
-
-    // intercept OPTIONS method
-    if (req.method === 'OPTIONS') {
-      res.sendStatus(200);
-    } else {
-      next();
-    }
-  } else {
-    next();
-  }
-});
 // eslint-disable-next-line import/order
 const http = require('http').Server(app);
 // eslint-disable-next-line import/order
 const io = require('socket.io').listen(http);
-const config = require('./config');
 
-// Raven.config(config.dsnSentry).install();
-
-Sentry.init({
-  dsn: config.dsnSentry,
-  environment: process.env.NODE_ENV,
-  release: process.env.COMMIT_HASH,
-  maxBreadcrumbs: 20,
-  attachStacktrace: true,
-  serverName: `licensing Microservice ${process.env.NODE_ENV || 'local'}`,
-  enabled: true,
-});
-
-mongoose
-  .connect(
-    config.mongo.url,
-    { useNewUrlParser: true }
-  )
-  .then(
-    () => {
-      console.log('Connected to Mongo');
-    },
-    err => console.log('Error connecting to Mongo', err)
-  );
+bootstrap(app);
 
 // enable the use of request body parsing middleware
 app.use(bodyParser.json());
@@ -107,7 +43,6 @@ app.get('/client/oauth', async (req, res) => {
 
 apiRoutes.includeRoutes(app);
 
-app.use(Sentry.Handlers.errorHandler());
 // eslint-ignore-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // set locals, only providing error in development

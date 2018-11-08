@@ -7,6 +7,7 @@ const router = express.Router();
 const Licence = require('../../schema/license-schema');
 const loginController = require('../controllers/auth.client');
 // const versionController = require('../controllers/version');
+const MetricConsumer = require('../controllers/metric-consumer');
 const aws = require('../controllers/aws');
 const licenceInjector = require('../middlewares/license-injector');
 
@@ -32,20 +33,74 @@ const upload = multer();
 router.use(licenceInjector);
 
 router.post('/licence/validate', async (req, res) => {
-  const licence = await Licence.findOne({
+  let licence = await Licence.findOne({
     'licenseDetails.licenseKey': req.licenceKey,
   });
 
   const metadata = {
     blockclusterAgentVersion: '1.0',
-    webappVersion: '', // await versionController.getLatest('webapp'),
+    webAppVersion: '', // await versionController.getLatest('webapp'),
     shouldDaemonDeployWebapp: false,
+    activatedFeatures: [],
   };
 
   if (licence) {
     metadata.clientId = licence.clientId;
+    if (!licence.servicesIncluded) {
+      await Licence.updateOne(
+        {
+          _id: licence._id,
+        },
+        {
+          $set: {
+            servicesIncluded: {
+              Payments: true,
+              SupportTicket: true,
+              Vouchers: true,
+              Invoice: true,
+              CardToCreateNetwork: true,
+              Hyperion: true,
+              Admin: true,
+            },
+          },
+        }
+      );
+    }
+    licence = await Licence.findOne({
+      'licenseDetails.licenseKey': req.licenceKey,
+    });
+    metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
   }
 
+  function updateAgentInfo(_licence, body = {}) {
+    if (!_licence) {
+      return () => {};
+    }
+    const allowedKeys = ['daemonVersion', 'webAppVersion'];
+    if (body.webAppVersion === 'NotFetched') {
+      delete body.webAppVersion;
+    }
+    Object.keys(body).forEach(prop => {
+      if (!allowedKeys.includes(prop)) {
+        delete body[prop];
+      }
+    });
+    const agentInfo = { ..._licence.agentMeta, ...body };
+    return async () => {
+      await Licence.updateOne(
+        {
+          _id: _licence._id,
+        },
+        {
+          $set: {
+            agentMeta: agentInfo,
+          },
+        }
+      );
+    };
+  }
+
+  setTimeout(updateAgentInfo(licence, req.body), 0);
   if (req.authToken === 'fetch-token' && req.licenceKey) {
     if (!licence) {
       return res.send({
@@ -101,6 +156,11 @@ router.post('/info/:type', upload.none(), (req, res) => {
     success: true,
   });
   return null;
+});
+
+router.post('/metrics', async (req, res) => {
+  await MetricConsumer.consume(req);
+  res.json({ success: true });
 });
 
 module.exports = router;

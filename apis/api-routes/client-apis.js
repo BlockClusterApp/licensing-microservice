@@ -2,6 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 const clientController = require('../controllers/client_init');
+const MetricsController = require('../controllers/metric-consumer');
+const License = require('../../schema/license-schema');
 
 router.post('/create_client', (req, res, next) => {
   if (!req.body.clientDetails) {
@@ -54,6 +56,32 @@ router.post('/reset-secret', async (req, res, next) => {
   }
   const updateStat = await clientController.resetclientSecret(req.body.clientId);
   return res.json(updateStat);
+});
+
+router.patch('/', async (req, res) => {
+  const result = await clientController.patchClient(req.body);
+  return res.json(result);
+});
+
+router.use('/metrics*', async (req, res, next) => {
+  const clientId = await License.findClientIdFromId(req.query.clientId);
+  req.clientId = clientId;
+  return next();
+});
+
+router.get('/metrics/:type/:resourceName', async (req, res) => {
+  const metrics = await MetricsController.fetchMetrics(req.clientId, req.params.type, req.params.resourceName);
+  res.json(metrics);
+});
+
+router.get('/metrics/:type', async (req, res) => {
+  const metrics = await MetricsController.fetchMetrics(req.clientId, req.params.type);
+  res.json(metrics);
+});
+
+router.get('/metrics', async (req, res) => {
+  const metrics = await MetricsController.fetchMetrics(req.clientId);
+  res.json(metrics);
 });
 
 module.exports = router;
