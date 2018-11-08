@@ -64,10 +64,8 @@ router.patch('/', async (req, res) => {
 });
 
 router.use('/metrics*', async (req, res, next) => {
-  console.log('Metrics', req.query.clientId);
   const clientId = await License.findClientIdFromId(req.query.clientId);
   req.clientId = clientId;
-  console.log('Id', clientId);
   return next();
 });
 
@@ -82,7 +80,6 @@ router.get('/metrics/:type', async (req, res) => {
 });
 
 router.get('/metrics', async (req, res) => {
-  console.log('Metrics 2');
   const metrics = await MetricsController.fetchMetrics(req.clientId);
   res.json(metrics);
 });

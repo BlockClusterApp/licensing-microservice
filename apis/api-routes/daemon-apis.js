@@ -60,6 +60,7 @@ router.post('/licence/validate', async (req, res) => {
               Invoice: true,
               CardToCreateNetwork: true,
               Hyperion: true,
+              Admin: true,
             },
           },
         }

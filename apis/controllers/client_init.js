@@ -82,6 +82,7 @@ const createClient = async clientDetails => {
       Invoice: true,
       CardToCreateNetwork: true,
       Hyperion: true,
+      Admin: true,
     },
   });
   const hashable = makeAccessKey();
