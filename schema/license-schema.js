@@ -100,6 +100,8 @@ const LicenseSchema = new mongoose.Schema(
       daemonVersion: String,
       webAppVersion: String,
       shouldDaemonDeployWebApp: Boolean,
+      webAppMigration: Number,
+      shouldWebAppRefreshAWSImageAuth: Boolean,
     },
   },
   {

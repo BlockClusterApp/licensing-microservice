@@ -83,6 +83,7 @@ const createClient = async clientDetails => {
       CardToCreateNetwork: true,
       Hyperion: true,
       Admin: true,
+      ClientDashboard: true,
     },
   });
   const hashable = makeAccessKey();
@@ -203,6 +204,8 @@ const patchClient = async body => {
     'clientMeta',
     'clientLogo',
     'agentMeta.webAppVersion',
+    'agentMeta.webAppMigration',
+    'agentMeta.shouldWebAppRefreshAWSImageAuth',
     'agentMeta.shouldDaemonDeployWebApp',
     'servicesIncluded',
   ];

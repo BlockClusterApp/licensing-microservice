@@ -42,6 +42,8 @@ router.post('/licence/validate', async (req, res) => {
     webAppVersion: '', // await versionController.getLatest('webapp'),
     shouldDaemonDeployWebapp: false,
     activatedFeatures: [],
+    shouldWebAppRefreshAWSImageAuth: false,
+    webappMigration: 0,
   };
 
   if (licence) {
@@ -61,6 +63,7 @@ router.post('/licence/validate', async (req, res) => {
               CardToCreateNetwork: true,
               Hyperion: true,
               Admin: true,
+              ClientDashboard: false,
             },
           },
         }
@@ -69,6 +72,8 @@ router.post('/licence/validate', async (req, res) => {
     licence = await Licence.findOne({
       'licenseDetails.licenseKey': req.licenceKey,
     });
+    metadata.shouldWebAppRefreshAWSImageAuth = licence.agentMeta.shouldWebAppRefreshAWSImageAuth;
+    metadata.webappMigration = licence.agentMeta.webappMigration;
     metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
   }
 
@@ -76,7 +81,7 @@ router.post('/licence/validate', async (req, res) => {
     if (!_licence) {
       return () => {};
     }
-    const allowedKeys = ['daemonVersion', 'webAppVersion'];
+    const allowedKeys = ['daemonVersion', 'webAppVersion', 'migrationVersion', 'migrationStatus'];
     if (body.webAppVersion === 'NotFetched') {
       delete body.webAppVersion;
     }
