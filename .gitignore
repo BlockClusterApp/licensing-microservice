@@ -8,3 +8,4 @@ licensing-micro.zip
 function.yaml
 kubeless.instruction
 .DS_Store
+.vscode/*

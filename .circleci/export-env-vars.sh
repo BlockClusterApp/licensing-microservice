@@ -6,11 +6,13 @@ then
   # export NODE_ENV=dev
   # export CLUSTER_PREFIX="dev";
   export NODE_ENV=production
-  export CLUSTER_PREFIX="production-ap-south-1b";
+  export CLUSTER_PREFIX="production-ap-south-1b"
+  export MY_HOST="https://enterprise-api.blockcluster.io";
 elif [ "$CIRCLE_TAG" = "staging" ] || [ "$CIRCLE_BRANCH"  = "staging" ];
 then
   export NODE_ENV=staging
-  export CLUSTER_PREFIX="dev";
+  export CLUSTER_PREFIX="dev"
+  export MY_HOST="https://enterprise-api-dev.blockcluster.io";
 elif [ "$CIRCLE_TAG" = "dev" ] ||  [ "$CIRCLE_BRANCH" = "dev" ];
 then
   export NODE_ENV=dev
