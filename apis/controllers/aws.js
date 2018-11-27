@@ -29,7 +29,10 @@ function generateImagePullPolicy(clientId) {
                 "ecr:DescribeImages",
                 "ecr:BatchCheckLayerAvailability"
             ],
-            "Resource": "arn:aws:ecr:us-west-2:402432300121:repository/${clientId}-webapp"
+            "Resource": [
+              "arn:aws:ecr:us-west-2:402432300121:repository/${clientId}-webapp",
+              "arn:aws:ecr:us-west-2:402432300121:repository/hyperion-scaler"
+          ]
         },
         {
             "Sid": "${randomstring.generate({
@@ -48,7 +51,7 @@ function generateImagePullPolicy(clientId) {
       {
         PolicyDocument: policy,
         PolicyName: `${clientId}-wa-ecr`,
-        Description: `Policy for ${clientId} to fetch WEBAPP repo from ECR`,
+        Description: `Policy for ${clientId} to fetch WEBAPP repo from ECR and hyperion scaler`,
       },
       (err, data) => {
         if (err) {
