@@ -72,7 +72,7 @@ router.post('/licence/validate', async (req, res) => {
     licence = await Licence.findOne({
       'licenseDetails.licenseKey': req.licenceKey,
     });
-    metadata.shouldDaemonDeployWebapp = licence.agentMeta.shouldDaemonDeployWebapp;
+    metadata.shouldDaemonDeployWebapp = licence.agentMeta.shouldDaemonDeployWebApp;
     metadata.shouldWebAppRefreshAWSImageAuth = licence.agentMeta.shouldWebAppRefreshAWSImageAuth;
     metadata.webappMigration = licence.agentMeta.webappMigration;
     metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
