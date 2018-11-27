@@ -25,9 +25,13 @@ function generateImagePullPolicy(clientId) {
   })}",
             "Effect": "Allow",
             "Action": [
-                "ecr:BatchGetImage",
-                "ecr:DescribeImages",
-                "ecr:BatchCheckLayerAvailability"
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage",
+              "ecr:DescribeImages",
+              "ecr:DescribeRepositories",
+              "ecr:ListImages",
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:GetRepositoryPolicy"
             ],
             "Resource": [
               "arn:aws:ecr:us-west-2:402432300121:repository/${clientId}-webapp",
