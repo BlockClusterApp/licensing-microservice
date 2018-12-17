@@ -144,7 +144,7 @@ router.post('/aws-creds', async (req, res) => {
 
 router.post('/info/:type', upload.none(), (req, res) => {
   if (!['nodes', 'pods', 'logs'].includes(req.params.type)) {
-    return res.status(400).send('Unauthorized');
+    return res.status(401).send('Unauthorized');
   }
   if (Array.isArray(req.body)) {
     req.body.forEach(b => {
