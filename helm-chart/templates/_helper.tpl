@@ -30,11 +30,11 @@ enterprise-api-dev.blockcluster.io
 {{- if eq .Values.NODE_ENV "production" -}}
 {{ .Values.MONGO_URL | quote }}
 {{- else if eq .Values.NODE_ENV "staging" -}}
-mongodb://35.161.9.16:31972
+mongodb://68.183.254.111:31436
 {{- else if eq .Values.NODE_ENV "test" -}}
-mongodb://35.161.9.16:32153
+mongodb://68.183.254.111:31469
 {{- else if eq .Values.NODE_ENV "dev" -}}
-mongodb://35.161.9.16:32153
+mongodb://68.183.254.111:31469
 {{- end -}}
 {{- end -}}
 
