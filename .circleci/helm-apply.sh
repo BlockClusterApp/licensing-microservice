@@ -5,9 +5,12 @@
 if [ "$NODE_ENV" = "production" ]; then
   aws s3 cp s3://bc-kubeconfig/config ~/.kube/config
   export KUBECONTEXT="k8s-${CLUSTER_PREFIX}.blockcluster.io";
+elif [ "$NODE_ENV" = "test" ] ; then
+  aws s3 cp s3://bc-kubeconfig/config ~/.kube/config
+  export KUBECONTEXT="k8s-dev.blockcluster.io";
 else
-  aws s3 cp s3://bc-kubeconfig/k8s-dev-do.blockcluster.io.yaml ~/.kube/config
-  export KUBECONTEXT="do-lon1-do-dev-blockclusterio"
+  aws s3 cp s3://bc-kubeconfig/config ~/.kube/config
+  export KUBECONTEXT="k8s-dev.blockcluster.io";
 fi
 
 helm init --client-only
