@@ -38,6 +38,7 @@ function initiazlizeCors(app) {
   switch (process.env.NODE_ENV) {
     case 'production':
       whileListedURLs.push('https://app.blockcluster.io');
+      whileListedURLs.push('https://admin.blockcluster.io');
       break;
     case 'staging':
       whileListedURLs.push('https://staging.blockcluster.io');
@@ -63,7 +64,7 @@ function initiazlizeCors(app) {
 
       // intercept OPTIONS method
       if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
+        res.sendStatus(204);
       } else {
         next();
       }

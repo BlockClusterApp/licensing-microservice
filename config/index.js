@@ -4,8 +4,8 @@ module.exports = {
     db: 'admin',
   },
   redis: {
-    host: process.env.REDIS_HOST || '35.161.9.16',
-    port: process.env.REDIS_PORT || '30645',
+    host: process.env.REDIS_HOST || '159.65.85.3',
+    port: process.env.REDIS_PORT || '6379',
   },
   jwt: {
     secret: 'uG6ETzvOBKUpTpYG1LBQ',
