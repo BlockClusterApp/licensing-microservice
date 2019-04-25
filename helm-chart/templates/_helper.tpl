@@ -68,7 +68,7 @@ mongodb://68.183.254.111:31469
 {{- if eq .Values.NODE_ENV "production" -}}
 web-production.vyqym8.ng.0001.aps1.cache.amazonaws.com
 {{- else -}}
-redis-master.{{ template "server.namespace" . }}.svc.cluster.local
+159.65.85.3
 {{- end -}}
 {{- end -}}
 
