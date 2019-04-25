@@ -30,11 +30,11 @@ enterprise-api-dev.blockcluster.io
 {{- if eq .Values.NODE_ENV "production" -}}
 {{ .Values.MONGO_URL | quote }}
 {{- else if eq .Values.NODE_ENV "staging" -}}
-mongodb://68.183.254.111:31436
+mongodb://159.65.85.3:27017/licensing
 {{- else if eq .Values.NODE_ENV "test" -}}
-mongodb://68.183.254.111:31469
+mongodb://159.65.85.3:27017/licensing
 {{- else if eq .Values.NODE_ENV "dev" -}}
-mongodb://68.183.254.111:31469
+mongodb://159.65.85.3:27017/licensing
 {{- end -}}
 {{- end -}}
 
@@ -68,7 +68,7 @@ mongodb://68.183.254.111:31469
 {{- if eq .Values.NODE_ENV "production" -}}
 web-production.vyqym8.ng.0001.aps1.cache.amazonaws.com
 {{- else -}}
-redis-master.{{ template "server.namespace" . }}.svc.cluster.local
+159.65.85.3
 {{- end -}}
 {{- end -}}
 

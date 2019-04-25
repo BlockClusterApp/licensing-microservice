@@ -27,6 +27,9 @@ api.includeRoutes = app => {
     algorithms: ['RS256'],
   });
   function isAuthenticatedPages(req, res, next) {
+    if (process.env.NODE_ENV === 'development') {
+      return next();
+    }
     if (
       req.headers['x-access-key'] === undefined
       || new Date(
@@ -49,6 +52,7 @@ api.includeRoutes = app => {
   //   // do something for auth
   //   return next();
   // }
+  app.use('/client/*', cors());
   app.use('/client/*', isAuthenticatedPages);
   app.use('/client', client);
   app.use('/auth', auth);

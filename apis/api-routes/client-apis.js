@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/client_init');
 const MetricsController = require('../controllers/metric-consumer');
+const FeatureController = require('../controllers/feature');
 const License = require('../../schema/license-schema');
 
 router.post('/create_client', (req, res, next) => {
@@ -21,6 +22,25 @@ router.post('/create_client', (req, res, next) => {
         message: error.message ? error.message : 'Internal Server Error!',
       });
     });
+  return true;
+});
+
+router.get('/features', async (req, res) => {
+  const list = await FeatureController.fetchFeatures();
+  res.json({
+    data: list,
+  });
+});
+
+router.post('/features', async (req, res) => {
+  const { name, activated } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: 'Feature name is required' });
+  }
+  const result = await FeatureController.add(name, activated);
+  res.json({
+    data: result,
+  });
   return true;
 });
 
