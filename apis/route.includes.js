@@ -49,6 +49,7 @@ api.includeRoutes = app => {
   //   // do something for auth
   //   return next();
   // }
+  app.use('/client/*', cors());
   app.use('/client/*', isAuthenticatedPages);
   app.use('/client', client);
   app.use('/auth', auth);
