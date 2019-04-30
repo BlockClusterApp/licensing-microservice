@@ -32,8 +32,36 @@ const upload = multer();
 
 router.use(licenceInjector);
 
+function updateAgentInfo(_licence, body = {}) {
+  if (!_licence) {
+    return () => {};
+  }
+  const allowedKeys = ['daemonVersion', 'webAppVersion', 'migrationVersion', 'migrationStatus', 'operationType'];
+  if (body.webAppVersion === 'NotFetched') {
+    delete body.webAppVersion;
+  }
+  Object.keys(body).forEach(prop => {
+    if (!allowedKeys.includes(prop)) {
+      delete body[prop];
+    }
+  });
+  const agentInfo = { ..._licence.agentMeta, ...body };
+  return async () => {
+    await Licence.updateOne(
+      {
+        _id: _licence._id,
+      },
+      {
+        $set: {
+          agentMeta: agentInfo,
+        },
+      }
+    );
+  };
+}
+
 router.post('/licence/validate', async (req, res) => {
-  let licence = await Licence.findOne({
+  const licence = await Licence.findOne({
     'licenseDetails.licenseKey': req.licenceKey,
   });
 
@@ -46,64 +74,15 @@ router.post('/licence/validate', async (req, res) => {
     webappMigration: 0,
   };
 
+  let clusterConfig = [];
+
   if (licence) {
     metadata.clientId = licence.clientId;
-    if (!licence.servicesIncluded) {
-      await Licence.updateOne(
-        {
-          _id: licence._id,
-        },
-        {
-          $set: {
-            servicesIncluded: {
-              Payments: true,
-              SupportTicket: true,
-              Vouchers: true,
-              Invoice: true,
-              CardToCreateNetwork: true,
-              Hyperion: true,
-              Admin: true,
-              ClientDashboard: false,
-            },
-          },
-        }
-      );
-    }
-    licence = await Licence.findOne({
-      'licenseDetails.licenseKey': req.licenceKey,
-    });
     metadata.shouldDaemonDeployWebapp = licence.agentMeta.shouldDaemonDeployWebApp;
     metadata.shouldWebAppRefreshAWSImageAuth = licence.agentMeta.shouldWebAppRefreshAWSImageAuth;
     metadata.webappMigration = licence.agentMeta.webappMigration;
     metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
-  }
-
-  function updateAgentInfo(_licence, body = {}) {
-    if (!_licence) {
-      return () => {};
-    }
-    const allowedKeys = ['daemonVersion', 'webAppVersion', 'migrationVersion', 'migrationStatus'];
-    if (body.webAppVersion === 'NotFetched') {
-      delete body.webAppVersion;
-    }
-    Object.keys(body).forEach(prop => {
-      if (!allowedKeys.includes(prop)) {
-        delete body[prop];
-      }
-    });
-    const agentInfo = { ..._licence.agentMeta, ...body };
-    return async () => {
-      await Licence.updateOne(
-        {
-          _id: _licence._id,
-        },
-        {
-          $set: {
-            agentMeta: agentInfo,
-          },
-        }
-      );
-    };
+    clusterConfig = [...licence.clusterConfig];
   }
 
   setTimeout(updateAgentInfo(licence, req.body), 0);
@@ -120,21 +99,47 @@ router.post('/licence/validate', async (req, res) => {
       success: true,
       message: token,
       metadata,
+      clusterConfig,
     });
   }
+
   if (Math.floor(new Date().getTime() / 1000) < req.jwt.exp - 60 * 60) {
     const token = loginController.generateToken(req.licenceKey);
     return res.send({
       success: true,
       message: token,
       metadata,
+      clusterConfig,
     });
   }
   return res.send({
     success: true,
     message: req.token,
     metadata,
+    clusterConfig,
   });
+});
+
+router.post('/cluster-token', async (req, res) => {
+  // Save cluster token
+  const { token, identifier } = req.body;
+
+  if (!token) {
+    return res.status(400).json({
+      error: true,
+      message: 'Token is missing',
+    });
+  }
+  if (!identifier) {
+    return res.status(400).json({
+      error: true,
+      message: 'Identifier is missing',
+    });
+  }
+});
+
+router.get('/cluster-config', async (req, res) => {
+  // Generate cluster config
 });
 
 router.post('/aws-creds', async (req, res) => {

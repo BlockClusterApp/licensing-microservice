@@ -102,6 +102,29 @@ const LicenseSchema = new mongoose.Schema(
       shouldDaemonDeployWebApp: Boolean,
       webAppMigration: Number,
       shouldWebAppRefreshAWSImageAuth: Boolean,
+      operationType: Number,
+    },
+    clusterConfig: {
+      clusters: Object,
+      webapp: {
+        dynamo: Object,
+        impulse: Object,
+        privatehive: Object,
+        mongoURL: Object,
+        redis: Object,
+        webapp: Object,
+        smtp: {
+          host: String,
+          port: String,
+          auth: {
+            user: String,
+            pass: String,
+          },
+        },
+        rootUrl: Object,
+        Ingress: Object,
+        paymeter: Object,
+      },
     },
   },
   {
@@ -142,3 +165,90 @@ LicenseSchema.statics.findClientIdFromId = async function fetchFromCache(id) {
 const LicenseModel = mongoose.model('license', LicenseSchema);
 
 module.exports = LicenseModel;
+
+/**
+ *
+ * Cluster Config {
+ *  "dev": {
+      "us-west-2": {
+        "masterAPIHost": "https://k8s-dev-us-west-2-api.blockcluster.io",
+        "workerNodeIP": "35.161.9.16",
+        "locationCode": "us-west-2",
+        "dynamoDomainName": "dev.blockcluster.io",
+        "apiHost": "https://dev.blockcluster.io",
+        "locationName": "US West (Oregon)",
+        "auth": {
+          "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJibG9ja2NsdXN0ZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoiYmxvY2tjbHVzdGVyLXdlYmFwcC10b2tlbi02bTZybiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJibG9ja2NsdXN0ZXItd2ViYXBwIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiN2U1OTZhOWItMzJiNC0xMWU5LWE5NGItMDI0ZDE4YzE2YTkyIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmJsb2NrY2x1c3RlcjpibG9ja2NsdXN0ZXItd2ViYXBwIn0.KoreE8lSCMeXt0TPHw6cjrVZMtmbEi8kbjng3kbdWoyRyM7BqeQZV37iSPq67a58Nb-4tlDTMsobdySlR0JRBsJjND3UUTopOZ75bw6N8w6ZNIVF1YDGlyH4E8syKOF30xd17ty4cpe5UwKmvVw71wHfMmephfKAiQZa_icgxTP2ndZv0SlM1JevR1UkowsGYrdjJOgXIrrmeAIaDcPEIWUvAO4O-vRh5GTwURuyPl7zMwJaER37ukAL8V-AetEEXF08O8zgJqWoi03SB56O8L-4S8ISV8dbDNFaDQ-Cumnfxnlb3mfI3Z9FPYCz8H_1iKkOp58qL_qL5whfPKo1OQ"
+        },
+        "hyperion": {
+          "ipfsPort": "31975",
+          "ipfsClusterPort": "31115"
+        }
+      }
+    }
+  }
+ *
+ *
+ *
+ * WebappConfig: {
+ *   "dynamo": {
+    "dev": "402432300121.dkr.ecr.us-west-2.amazonaws.com/dynamo:dev",
+  },
+  "impulse": {
+    "dev": "402432300121.dkr.ecr.us-west-2.amazonaws.com/impulse:dev",
+  },
+  "privatehive": {
+    "dev": {
+      "peer": "402432300121.dkr.ecr.ap-south-1.amazonaws.com/privatehive-peer-api:dev",
+      "orderer": "402432300121.dkr.ecr.ap-south-1.amazonaws.com/privatehive-orderer-api:dev"
+    }
+  },
+  "mongoURL": {
+    "dev": "mongodb://35.161.9.16:32153"
+  },
+  "redis": {
+    "dev": {
+      "host": "redis-master.dev.svc.cluster.local",
+      "port": "6379"
+    }
+  },
+  "webapp": {
+    "dev": "402432300121.dkr.ecr.us-west-2.amazonaws.com/webapp:dev"
+  },
+  "smtp": {
+    "host": "",
+    "port": "",
+    "auth": {
+      "user": "",
+      "pass": ""
+    }
+  },
+  "rootUrl": {
+    "dev": "https://dev.blockcluster.io",
+  },
+  "Ingress": {
+    "dev": {
+      "Annotations": {},
+      "secretName": "blockcluster-ssl"
+    }
+  },
+  "paymeter": {
+    "dev": {
+      "blockchains": {
+        "eth": {
+          "testnet": {
+            "url": "wss://rinkeby.infura.io/ws/v3/a71954447581416991b1371b44b305dd"
+          },
+          "mainnet": {
+            "url": "wss://mainnet.infura.io/ws/v3/a71954447581416991b1371b44b305dd"
+          }
+        }
+      },
+      "api_keys": {
+        "coinmarketcap": "5695d8e3-ecf8-47e1-895b-1fd0c67edea9",
+        "ethplorer": "freekey"
+      }
+    }
+  }
+ * }
+ */
