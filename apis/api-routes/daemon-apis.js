@@ -74,15 +74,12 @@ router.post('/licence/validate', async (req, res) => {
     webappMigration: 0,
   };
 
-  let clusterConfig = [];
-
   if (licence) {
     metadata.clientId = licence.clientId;
     metadata.shouldDaemonDeployWebapp = licence.agentMeta.shouldDaemonDeployWebApp;
     metadata.shouldWebAppRefreshAWSImageAuth = licence.agentMeta.shouldWebAppRefreshAWSImageAuth;
     metadata.webappMigration = licence.agentMeta.webappMigration;
     metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
-    clusterConfig = [...licence.clusterConfig];
   }
 
   setTimeout(updateAgentInfo(licence, req.body), 0);
@@ -99,7 +96,6 @@ router.post('/licence/validate', async (req, res) => {
       success: true,
       message: token,
       metadata,
-      clusterConfig,
     });
   }
 
@@ -109,14 +105,12 @@ router.post('/licence/validate', async (req, res) => {
       success: true,
       message: token,
       metadata,
-      clusterConfig,
     });
   }
   return res.send({
     success: true,
     message: req.token,
     metadata,
-    clusterConfig,
   });
 });
 

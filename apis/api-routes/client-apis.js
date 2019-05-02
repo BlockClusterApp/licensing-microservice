@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/client_init');
 const MetricsController = require('../controllers/metric-consumer');
+const Client = require('../controllers/client');
 const FeatureController = require('../controllers/feature');
 const License = require('../../schema/license-schema');
 
@@ -42,6 +43,38 @@ router.post('/features', async (req, res) => {
     data: result,
   });
   return true;
+});
+
+router.get('/:id/cluster-configs', async (req, res) => {
+  const license = await License.findOne({ _id: req.params.id });
+  if (license) {
+    return res.json({
+      success: true,
+      data: license.clusterConfig,
+    });
+  }
+  return res.status(400).json({
+    success: false,
+    error: 'Invalid client id',
+  });
+});
+
+router.post('/:id/namespace', async (req, res) => {
+  const { id } = req.params;
+  const { namespace } = req.body;
+
+  try {
+    const license = await Client.addNamespace(id, namespace);
+    return res.json({
+      success: true,
+      data: license,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: err.toString(),
+    });
+  }
 });
 
 /**

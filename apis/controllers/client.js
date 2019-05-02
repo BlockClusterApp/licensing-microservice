@@ -27,4 +27,25 @@ Client.fetchClusterConfig = async licenceKey => {
   return result;
 };
 
+Client.addNamespace = async (clientId, namespace) => {
+  const license = await License.findOne({ _id: clientId });
+  if (license.clusterConfig && license.clusterConfig.clusters && license.clusterConfig.clusters[namespace]) {
+    return Promise.reject(new Error('Already exists'));
+  }
+
+  await License.updateOne(
+    {
+      _id: clientId,
+    },
+    {
+      $set: {
+        [`clusterConfig.clusters.${namespace}`]: {},
+      },
+    }
+  );
+
+  const newLicense = await License.findOne({ _id: clientId });
+  return newLicense.clusterConfig;
+};
+
 module.exports = Client;

@@ -41,6 +41,13 @@ app.get('/client/oauth', async (req, res) => {
   return res.send('You Are Good to Go!');
 });
 
+app.use((req, res, next) => {
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  next();
+});
+
 apiRoutes.includeRoutes(app);
 
 // eslint-ignore-next-line no-unused-vars

@@ -10,7 +10,7 @@
       "name": "Launch Program",
       "program": "${workspaceFolder}/index.js",
       "env": {
-        "MONGO_URL": "mongodb://35.161.9.16:32153"
+        "MONGO_URL": "mongodb://159.65.85.3:27017/licensing"
       }
     }
   ]
