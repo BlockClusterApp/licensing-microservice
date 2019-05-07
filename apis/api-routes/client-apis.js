@@ -59,6 +59,32 @@ router.get('/:id/cluster-configs', async (req, res) => {
   });
 });
 
+router.post('/:id/cluster-configs', async (req, res) => {
+  // eslint-disable-next-line object-curly-newline
+  const { masterAPIHost, namespace, workerNodeIP, ingressDomain, identifier, locationName, apiHost } = req.body;
+
+  try {
+    const result = await Client.addCluster(req.params.id, {
+      masterAPIHost,
+      namespace,
+      workerNodeIP,
+      ingressDomain,
+      identifier,
+      locationName,
+      apiHost,
+    });
+    return res.json({
+      success: true,
+      data: result,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: err.toString(),
+    });
+  }
+});
+
 router.post('/:id/namespace', async (req, res) => {
   const { id } = req.params;
   const { namespace } = req.body;

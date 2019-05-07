@@ -3,6 +3,8 @@ const beautifyUnique = require('mongoose-beautiful-unique-validation');
 
 const redis = require('../boot/redis');
 
+const { Schema } = mongoose;
+
 const LicenseSchema = new mongoose.Schema(
   {
     clientId: {
@@ -94,7 +96,7 @@ const LicenseSchema = new mongoose.Schema(
        * {payment: true}
        * {voucher: true}
        * */
-      type: Object,
+      type: Map,
     },
     agentMeta: {
       daemonVersion: String,
@@ -105,14 +107,14 @@ const LicenseSchema = new mongoose.Schema(
       operationType: Number,
     },
     clusterConfig: {
-      clusters: { type: Object },
+      clusters: Map,
       webapp: {
-        dynamo: { type: Object },
-        impulse: { type: Object },
-        privatehive: { type: Object },
-        mongoURL: { type: Object },
-        redis: { type: Object },
-        webapp: { type: Object },
+        dynamo: { type: Map },
+        impulse: { type: Map },
+        privatehive: { type: Map },
+        mongoURL: { type: Map },
+        redis: { type: Map },
+        webapp: { type: Map },
         smtp: {
           host: { type: String },
           port: { type: String },
@@ -121,9 +123,9 @@ const LicenseSchema = new mongoose.Schema(
             pass: { type: String },
           },
         },
-        rootUrl: { type: Object },
-        Ingress: { type: Object },
-        paymeter: { type: Object },
+        rootUrl: { type: Map },
+        Ingress: { type: Map },
+        paymeter: { type: Map },
       },
     },
   },
@@ -162,7 +164,7 @@ LicenseSchema.statics.findClientIdFromId = async function fetchFromCache(id) {
   return clientId;
 };
 
-const LicenseModel = mongoose.model('license', LicenseSchema);
+const LicenseModel = mongoose.model('client', LicenseSchema);
 
 module.exports = LicenseModel;
 
