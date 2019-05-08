@@ -16,5 +16,10 @@ pipeline {
         sh './.circleci/docker-push.sh'
       }
     }
+    stage('Helm Apply') {
+      steps {
+        sh './.circleci/helm-apply.sh'
+      }
+    }
   }
 }
