@@ -1,13 +1,12 @@
 pipeline {
   agent any
   stages {
-    stage('Build Image') {
-      agent {
-        docker {
-          image 'circleci/node:8.9'
-        }
-
+    stage('Print ENVs') {
+      steps {
+        sh 'printenv'
       }
+    }
+    stage('Build Image') {
       steps {
         sh './.circleci/docker-build.sh'
       }

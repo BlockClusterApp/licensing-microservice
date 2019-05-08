@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 export COMMIT_HASH=${CIRCLE_SHA1}
+
+if [ ! -z "$JENKINS_HOME" ];
+then
+  export CIRCLE_BRANCH="$BRANCH_NAME"
+  export COMMIT_HASH="$GIT_COMMIT"
+fi
 if [ "$CIRCLE_TAG" = "production" ] || [ "$CIRCLE_BRANCH" = "master" ];
 then
   # export NODE_ENV=dev
