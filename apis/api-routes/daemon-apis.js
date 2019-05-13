@@ -6,6 +6,7 @@ require('winston-daily-rotate-file');
 const router = express.Router();
 const Licence = require('../../schema/license-schema');
 const loginController = require('../controllers/auth.client');
+const Client = require('../controllers/client');
 // const versionController = require('../controllers/version');
 const MetricConsumer = require('../controllers/metric-consumer');
 const aws = require('../controllers/aws');
@@ -79,7 +80,7 @@ router.post('/licence/validate', async (req, res) => {
     metadata.shouldDaemonDeployWebapp = licence.agentMeta.shouldDaemonDeployWebApp;
     metadata.shouldWebAppRefreshAWSImageAuth = licence.agentMeta.shouldWebAppRefreshAWSImageAuth;
     metadata.webappMigration = licence.agentMeta.webappMigration;
-    metadata.activatedFeatures = Object.keys(licence.servicesIncluded).filter(serviceName => !!licence.servicesIncluded[serviceName]);
+    metadata.activatedFeatures = Object.keys(licence.toJSON().servicesIncluded).filter(serviceName => !!licence.toJSON().servicesIncluded[serviceName]);
   }
 
   setTimeout(updateAgentInfo(licence, req.body), 0);
@@ -130,10 +131,30 @@ router.post('/cluster-token', async (req, res) => {
       message: 'Identifier is missing',
     });
   }
+
+  try {
+    await Client.addTokenToCluster(req.clientId, identifier, token);
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ success: false, error: err.toString() });
+  }
 });
 
 router.get('/cluster-config', async (req, res) => {
   // Generate cluster config
+  const license = await Licence.findOne({
+    'licenseDetails.licenseKey': req.licenceKey,
+  });
+  if (!license) {
+    return res.status(403).json({
+      success: false,
+      error: 'Invalid license',
+    });
+  }
+  return res.json({ 'licence.yaml': `key: ${req.licenceKey}`, 'cluster-config.json': JSON.stringify(license.toJSON().clusterConfig.clusters) });
 });
 
 router.post('/aws-creds', async (req, res) => {

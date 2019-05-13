@@ -48,6 +48,24 @@ Client.addNamespace = async (clientId, namespace) => {
   return newLicense.clusterConfig;
 };
 
+Client.addTokenToCluster = async (clientId, identifier, token) => {
+  const license = await License.findOne({ clientId });
+  if (!license) {
+    return Promise.reject(new Error('Invalid client id'));
+  }
+  const lic = license.toJSON();
+  if (!lic.clusterConfig.clusters) {
+    return Promise.reject(new Error('No cluster added'));
+  }
+
+  Object.keys(lic.clusterConfig.clusters).forEach(namespace => {
+    license.clusterConfig.clusters.get(namespace)[identifier].auth.token = token;
+  });
+
+  await license.save();
+  return true;
+};
+
 Client.addCluster = async (clientId, details) => {
   // eslint-disable-next-line object-curly-newline
   const { masterAPIHost, namespace, workerNodeIP, ingressDomain, identifier, locationName, apiHost } = details;
@@ -66,8 +84,6 @@ Client.addCluster = async (clientId, details) => {
     return Promise.reject(new Error('Cluster already exists'));
   }
 
-  console.log(license);
-
   const obj = {
     masterAPIHost,
     workerNodeIP,
@@ -84,6 +100,10 @@ Client.addCluster = async (clientId, details) => {
     },
   };
 
+  if (!license.clusterConfig.clusters) {
+    license.clusterConfig.clusters = {};
+  }
+
   if (!license.clusterConfig.clusters.get(namespace)) {
     license.clusterConfig.clusters.set(namespace, {
       [identifier]: obj,
@@ -95,8 +115,8 @@ Client.addCluster = async (clientId, details) => {
     });
   }
 
-  const res = await license.save();
-  console.log(res);
+  await license.save();
+
   return license;
 };
 
