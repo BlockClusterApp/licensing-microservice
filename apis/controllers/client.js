@@ -80,7 +80,7 @@ Client.addCluster = async (clientId, details) => {
     return Promise.reject(new Error('Invalid license id'));
   }
 
-  if (license.clusterConfig && license.clusterConfig.clusters && license.clusterConfig.clusters[namespace] && license.clusterConfig.clusters[namespace][identifier]) {
+  if (license.clusterConfig && license.clusterConfig.clusters && license.clusterConfig.clusters.get(namespace) && license.clusterConfig.clusters.get(namespace)[identifier]) {
     return Promise.reject(new Error('Cluster already exists'));
   }
 
@@ -118,6 +118,38 @@ Client.addCluster = async (clientId, details) => {
   await license.save();
 
   return license;
+};
+
+Client.updateCluster = async (clientId, details) => {
+  // eslint-disable-next-line object-curly-newline
+  const { masterAPIHost, namespace, workerNodeIP, ingressDomain, identifier, locationName, apiHost } = details;
+
+  const license = await License.findOne({ _id: clientId });
+
+  if (!license) {
+    return Promise.reject(new Error('Invalid license id'));
+  }
+
+  if (!(license.clusterConfig && license.clusterConfig.clusters && license.clusterConfig.clusters.get(namespace) && license.clusterConfig.clusters.get(namespace)[identifier])) {
+    return Promise.reject(new Error('Cluster does not exists'));
+  }
+
+  const oldConfig = license.clusterConfig.clusters.get(namespace)[identifier];
+  license.clusterConfig.clusters.get(namespace)[identifier] = {
+    ...oldConfig,
+    masterAPIHost,
+    workerNodeIP,
+    dynamoDomainName: ingressDomain,
+    apiHost,
+    locationName,
+  };
+
+  await license.save();
+  return license;
+};
+
+Client.addWebappConfig = async (clientId, details) => {
+  const { namespace, dynamo, impulse, privatehive, mongo, redis, webapp, rootUrl, ingress, paymeter } = details;
 };
 
 module.exports = Client;
