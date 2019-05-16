@@ -149,7 +149,42 @@ Client.updateCluster = async (clientId, details) => {
 };
 
 Client.addWebappConfig = async (clientId, details) => {
+  // eslint-disable-next-line object-curly-newline
   const { namespace, dynamo, impulse, privatehive, mongo, redis, webapp, rootUrl, ingress, paymeter } = details;
+
+  const license = await License.findOne({ _id: clientId });
+
+  if (!license) {
+    return Promise.reject(new Error('Invalid license id'));
+  }
+
+  if (!(license.clusterConfig.webapp && license.clusterConfig.webapp.dynamo)) {
+    license.clusterConfig.webapp = {
+      dynamo: { [namespace]: dynamo },
+      impulse: { [namespace]: impulse },
+      privatehive: { [namespace]: privatehive },
+      webapp: { [namespace]: webapp },
+      mongoURL: { [namespace]: mongo },
+      redis: { [namespace]: { host: redis.host, port: redis.port } },
+      rootUrl: { [namespace]: rootUrl },
+      Ingress: { [namespace]: ingress },
+      paymeter: { [namespace]: paymeter },
+    };
+  } else {
+    license.clusterConfig.webapp.dynamo.set(namespace, dynamo);
+    license.clusterConfig.webapp.impulse.set(namespace, impulse);
+    license.clusterConfig.webapp.privatehive.set(namespace, privatehive);
+    license.clusterConfig.webapp.webapp.set(namespace, webapp);
+    license.clusterConfig.webapp.mongoURL.set(namespace, mongo);
+    license.clusterConfig.webapp.redis.set(namespace, { host: redis.host, port: redis.port });
+    license.clusterConfig.webapp.rootUrl.set(namespace, rootUrl);
+    license.clusterConfig.webapp.Ingress.set(namespace, ingress);
+    license.clusterConfig.webapp.paymeter.set(namespace, paymeter);
+  }
+
+  await license.save();
+
+  return license;
 };
 
 module.exports = Client;

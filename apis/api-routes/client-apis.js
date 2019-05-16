@@ -85,6 +85,21 @@ router.post('/:id/cluster-configs', async (req, res) => {
   }
 });
 
+router.post('/:id/webapp-configs', async (req, res) => {
+  try {
+    const license = await Client.addWebappConfig(req.params.id, req.body);
+    return res.json({
+      success: true,
+      data: license,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      error: err.toString(),
+    });
+  }
+});
+
 router.post('/:id/namespace', async (req, res) => {
   const { id } = req.params;
   const { namespace } = req.body;

@@ -5,7 +5,7 @@ const redis = require('../boot/redis');
 
 const { Schema } = mongoose;
 
-const LicenseSchema = new mongoose.Schema(
+const LicenseSchema = new Schema(
   {
     clientId: {
       type: String,
@@ -132,6 +132,7 @@ const LicenseSchema = new mongoose.Schema(
   {
     collection: 'clients',
     timestamps: true,
+    strict: false,
   }
 );
 LicenseSchema.plugin(beautifyUnique);
